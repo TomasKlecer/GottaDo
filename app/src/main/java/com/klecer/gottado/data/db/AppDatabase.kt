@@ -28,7 +28,7 @@ import com.klecer.gottado.data.db.entity.WidgetConfigEntity
         RoutineEntity::class,
         TrashEntryEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(AppConverters::class)
@@ -62,6 +62,11 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE widget_config ADD COLUMN showTitleOnWidget INTEGER NOT NULL DEFAULT 1")
+            }
+        }
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE routine ADD COLUMN name TEXT DEFAULT NULL")
             }
         }
     }

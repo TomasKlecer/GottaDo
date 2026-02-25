@@ -9,9 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.klecer.gottado.ui.screen.categorylist.CategoryListScreen
-import com.klecer.gottado.ui.screen.categorylist.CategoryListViewModel
-import com.klecer.gottado.ui.screen.categorysettings.CategorySettingsScreen
-import com.klecer.gottado.ui.screen.categorysettings.CategorySettingsViewModel
+import com.klecer.gottado.ui.screen.categorysettings.CategoryTabViewModel
 import com.klecer.gottado.ui.screen.recordeditoptions.RecordEditOptionsScreen
 import com.klecer.gottado.ui.screen.recordeditoptions.RecordEditOptionsViewModel
 import com.klecer.gottado.ui.screen.routineedit.RoutineEditScreen
@@ -21,9 +19,7 @@ import com.klecer.gottado.ui.screen.routinelist.RoutineListViewModel
 import com.klecer.gottado.ui.screen.trash.TrashScreen
 import com.klecer.gottado.ui.screen.trash.TrashViewModel
 import com.klecer.gottado.ui.screen.widgetlist.WidgetListScreen
-import com.klecer.gottado.ui.screen.widgetlist.WidgetListViewModel
-import com.klecer.gottado.ui.screen.widgetsettings.WidgetSettingsScreen
-import com.klecer.gottado.ui.screen.widgetsettings.WidgetSettingsViewModel
+import com.klecer.gottado.ui.screen.widgetsettings.WidgetTabViewModel
 
 @Composable
 fun AppNavigation(
@@ -37,43 +33,25 @@ fun AppNavigation(
         startDestination = NavRoutes.WIDGET_LIST
     ) {
         composable(NavRoutes.WIDGET_LIST) {
-            val viewModel: WidgetListViewModel = hiltViewModel()
-            WidgetListScreen(
-                viewModel = viewModel,
-                onWidgetClick = { widgetId ->
-                    navController.navigate(NavRoutes.widgetSettings(widgetId))
-                }
-            )
+            val viewModel: WidgetTabViewModel = hiltViewModel()
+            WidgetListScreen(viewModel = viewModel)
         }
         composable(
             NavRoutes.WIDGET_SETTINGS,
             arguments = listOf(navArgument("widgetId") { defaultValue = "0" })
         ) {
-            val viewModel: WidgetSettingsViewModel = hiltViewModel()
-            WidgetSettingsScreen(
-                viewModel = viewModel,
-                onBack = { navController.popBackStack() }
-            )
+            val viewModel: WidgetTabViewModel = hiltViewModel()
+            WidgetListScreen(viewModel = viewModel)
         }
         composable(NavRoutes.CATEGORY_LIST) {
-            val viewModel: CategoryListViewModel = hiltViewModel()
+            val viewModel: CategoryTabViewModel = hiltViewModel()
             CategoryListScreen(
                 viewModel = viewModel,
-                onCategoryClick = { categoryId ->
-                    navController.navigate(NavRoutes.categorySettings(categoryId))
-                }
-            )
-        }
-        composable(
-            NavRoutes.CATEGORY_SETTINGS,
-            arguments = listOf(navArgument("categoryId") { defaultValue = "0" })
-        ) {
-            val viewModel: CategorySettingsViewModel = hiltViewModel()
-            CategorySettingsScreen(
-                viewModel = viewModel,
-                onBack = { navController.popBackStack() },
-                onManageRoutines = { categoryId ->
-                    navController.navigate(NavRoutes.routineList(categoryId))
+                onAddRoutine = { categoryId ->
+                    navController.navigate(NavRoutes.routineEdit(categoryId, 0))
+                },
+                onEditRoutine = { categoryId, routineId ->
+                    navController.navigate(NavRoutes.routineEdit(categoryId, routineId))
                 }
             )
         }

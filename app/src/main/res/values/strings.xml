@@ -72,6 +72,7 @@
 
     <string name="category_settings_manage_routines">Manage routines</string>
 
+    <string name="routine_name">Routine name</string>
     <string name="routine_add">Add routine</string>
     <string name="routine_edit">Edit</string>
     <string name="routine_delete">Delete</string>
@@ -122,7 +123,7 @@
     <string name="info_widget_checkbox_size">Visual size of the checkbox (click area stays the same)</string>
     <string name="info_widget_cat_font_size">Font size for category headers on the widget</string>
     <string name="info_widget_record_font_size">Font size for task entries on the widget</string>
-    <string name="info_widget_reorder_handle">Drag handle on the widget edge for quick reorder access</string>
+    <string name="info_widget_reorder_handle">Tap strip on the widget edge to open the reorder overlay (LEFT/RIGHT), or NONE to hide</string>
 
     <string name="info_cat_color">Color used for the category header and its task bullets</string>
     <string name="info_cat_checkbox">Display checkboxes instead of bullet dots for tasks in this category</string>

@@ -20,6 +20,7 @@ import androidx.room.PrimaryKey
 data class RoutineEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val categoryId: Long,
+    val name: String? = null,
     val frequency: RoutineFrequency,
     val scheduleTimeHour: Int,
     val scheduleTimeMinute: Int,

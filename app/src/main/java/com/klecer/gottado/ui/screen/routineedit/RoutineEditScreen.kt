@@ -53,6 +53,14 @@ fun RoutineEditScreen(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+        OutlinedTextField(
+            value = state.name,
+            onValueChange = viewModel::updateName,
+            label = { Text(stringResource(R.string.routine_name)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
         SectionTitle(stringResource(R.string.routine_frequency))
         FrequencyDropdown(state.frequency, viewModel::updateFrequency)
 

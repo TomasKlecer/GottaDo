@@ -23,6 +23,7 @@ data class RoutineEditState(
     val isNew: Boolean = true,
     val id: Long = 0,
     val categoryId: Long = 0,
+    val name: String = "",
     val frequency: RoutineFrequency = RoutineFrequency.DAILY,
     val hour: Int = 8,
     val minute: Int = 0,
@@ -69,6 +70,7 @@ class RoutineEditViewModel @Inject constructor(
                         isNew = false,
                         id = entity.id,
                         categoryId = entity.categoryId,
+                        name = entity.name ?: "",
                         frequency = entity.frequency,
                         hour = entity.scheduleTimeHour,
                         minute = entity.scheduleTimeMinute,
@@ -98,6 +100,7 @@ class RoutineEditViewModel @Inject constructor(
         }
     }
 
+    fun updateName(name: String) { _state.value = _state.value.copy(name = name) }
     fun updateFrequency(f: RoutineFrequency) { _state.value = _state.value.copy(frequency = f) }
     fun updateHour(h: Int) { _state.value = _state.value.copy(hour = h) }
     fun updateMinute(m: Int) { _state.value = _state.value.copy(minute = m) }
@@ -117,6 +120,7 @@ class RoutineEditViewModel @Inject constructor(
             val entity = RoutineEntity(
                 id = if (s.isNew) 0 else s.id,
                 categoryId = s.categoryId,
+                name = s.name.takeIf { it.isNotBlank() },
                 frequency = s.frequency,
                 scheduleTimeHour = s.hour,
                 scheduleTimeMinute = s.minute,
