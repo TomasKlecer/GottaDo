@@ -1,0 +1,138 @@
+<resources>
+    <string name="app_name">GottaDo</string>
+    <string name="widget_open_app">Open app</string>
+    <string name="widget_reorder">⇅</string>
+    <string name="widget_undo_delete">↩ Undo delete</string>
+    <string name="widget_label">GottaDo</string>
+
+    <string name="record_edit_content_hint">Write your note here…</string>
+    <string name="record_edit_completed">Completed</string>
+    <string name="record_edit_bullet_color">Bullet color</string>
+    <string name="record_edit_text_color">Text color</string>
+    <string name="record_edit_color">Color</string>
+    <string name="record_edit_time">Time</string>
+    <string name="record_edit_set_time">Set time</string>
+    <string name="record_edit_clear_time">Clear time</string>
+    <string name="record_edit_category">Category</string>
+    <string name="record_edit_save">Save</string>
+    <string name="record_edit_cancel">Cancel</string>
+    <string name="record_edit_delete">Delete</string>
+    <string name="record_edit_undo">Undo</string>
+
+    <string name="reorder_title">Reorder tasks</string>
+    <string name="reorder_up">Move up</string>
+    <string name="reorder_down">Move down</string>
+
+    <string name="widget_list_hint">Add a widget from your launcher, then tap it here to configure.</string>
+    <string name="widget_list_item_default">Widget %d</string>
+    <string name="widget_settings_title">Title</string>
+    <string name="widget_settings_subtitle">Subtitle</string>
+    <string name="widget_settings_note">Note (visible only in app)</string>
+    <string name="widget_settings_show_title_on_widget">Show title on widget</string>
+    <string name="widget_settings_bg_color">Background color</string>
+    <string name="widget_settings_background">Background opacity</string>
+    <string name="widget_settings_category_font_size">Category font size (sp)</string>
+    <string name="widget_settings_record_font_size">Record font size (sp)</string>
+    <string name="widget_settings_reorder_handle">Reorder handle</string>
+    <string name="widget_settings_categories">Categories in this widget</string>
+    <string name="widget_settings_remove">Remove</string>
+    <string name="widget_settings_add_category">Add category to widget</string>
+    <string name="widget_settings_title_color">Title color</string>
+    <string name="widget_settings_subtitle_color">Subtitle color</string>
+    <string name="widget_settings_default_text_color">Default text color</string>
+    <string name="widget_settings_bullet_size">Bullet size (dp)</string>
+    <string name="widget_settings_checkbox_size">Checkbox size (dp)</string>
+    <string name="widget_settings_save">Save</string>
+
+    <string name="category_list_title">Manage categories</string>
+    <string name="category_list_add">Add category</string>
+    <string name="category_settings_name">Name</string>
+    <string name="category_settings_show_checkbox">Show checkbox instead of bullet</string>
+    <string name="category_settings_tasks_time_first">Tasks with time first</string>
+    <string name="category_settings_type">Type</string>
+    <string name="category_settings_color">Category color</string>
+    <string name="category_settings_save">Save</string>
+    <string name="category_type_normal">Normal</string>
+    <string name="category_type_today">Today</string>
+    <string name="category_type_tomorrow">Tomorrow</string>
+    <string name="category_type_monday">Monday</string>
+    <string name="category_type_tuesday">Tuesday</string>
+    <string name="category_type_wednesday">Wednesday</string>
+    <string name="category_type_thursday">Thursday</string>
+    <string name="category_type_friday">Friday</string>
+    <string name="category_type_saturday">Saturday</string>
+    <string name="category_type_sunday">Sunday</string>
+
+    <string name="record_edit_options_title">Record edit options</string>
+    <string name="record_edit_options_rich_text">Allow rich text</string>
+    <string name="record_edit_options_time">Show time field</string>
+    <string name="record_edit_options_category">Show category dropdown</string>
+    <string name="record_edit_options_bullet_color">Show bullet color</string>
+    <string name="record_edit_options_save">Save</string>
+
+    <string name="category_settings_manage_routines">Manage routines</string>
+
+    <string name="routine_add">Add routine</string>
+    <string name="routine_edit">Edit</string>
+    <string name="routine_delete">Delete</string>
+    <string name="routine_save">Save</string>
+    <string name="routine_cancel">Cancel</string>
+    <string name="routine_frequency">Frequency</string>
+    <string name="routine_schedule_time">Schedule time</string>
+    <string name="routine_day_of_week">Day of week</string>
+    <string name="routine_day_of_month">Day of month</string>
+    <string name="routine_month">Month</string>
+    <string name="routine_visibility">Visibility</string>
+    <string name="routine_incomplete_tasks">Incomplete tasks action</string>
+    <string name="routine_completed_tasks">Completed tasks action</string>
+    <string name="routine_move_to">Move to category</string>
+
+    <string name="tab_widgets">Widgets</string>
+    <string name="tab_categories">Categories</string>
+    <string name="tab_edit_options">Edit options</string>
+    <string name="tab_trash">Trash</string>
+
+    <string name="trash_title">Trash</string>
+    <string name="trash_empty">Empty trash</string>
+    <string name="trash_restore">Restore</string>
+    <string name="trash_delete_permanent">Delete permanently</string>
+
+    <string name="unsaved_changes_title">Unsaved changes</string>
+    <string name="unsaved_changes_message">You have unsaved changes on this page.</string>
+    <string name="unsaved_discard">Discard</string>
+    <string name="unsaved_save">Save</string>
+
+    <string name="widget_hint_no_categories">No categories added.\nOpen app ▸ Categories ▸ add categories,\nthen Widgets ▸ open this widget ▸ add category to widget.</string>
+
+    <string name="widget_list_add_widget">Add widget to screen</string>
+
+    <string name="record_edit_options_unified_color">Use single color picker for bullet and text</string>
+
+    <string name="info_widget_title">Display name shown in the app list and optionally on the widget</string>
+    <string name="info_widget_show_title">When checked, the title text is also displayed on the widget</string>
+    <string name="info_widget_subtitle">Secondary text shown below the title on the widget</string>
+    <string name="info_widget_note">Personal note only visible in the app, not on the widget</string>
+    <string name="info_widget_categories">Choose which categories and their tasks appear in this widget</string>
+    <string name="info_widget_bg_color">Background color of the widget</string>
+    <string name="info_widget_bg_opacity">Transparency level of the widget background</string>
+    <string name="info_widget_title_color">Color of the title text on the widget</string>
+    <string name="info_widget_subtitle_color">Color of the subtitle text on the widget</string>
+    <string name="info_widget_default_text_color">Default color for task text and widget buttons</string>
+    <string name="info_widget_bullet_size">Visual size of the bullet dot (click area stays the same)</string>
+    <string name="info_widget_checkbox_size">Visual size of the checkbox (click area stays the same)</string>
+    <string name="info_widget_cat_font_size">Font size for category headers on the widget</string>
+    <string name="info_widget_record_font_size">Font size for task entries on the widget</string>
+    <string name="info_widget_reorder_handle">Drag handle on the widget edge for quick reorder access</string>
+
+    <string name="info_cat_color">Color used for the category header and its task bullets</string>
+    <string name="info_cat_checkbox">Display checkboxes instead of bullet dots for tasks in this category</string>
+    <string name="info_cat_time_first">Sort tasks with scheduled times to the top of this category</string>
+    <string name="info_cat_type">Determines task visibility based on the day of the week</string>
+    <string name="info_cat_routines">Automated rules that create, move, or clean up tasks on a schedule</string>
+
+    <string name="info_opt_rich_text">Enable rich text formatting in task entries</string>
+    <string name="info_opt_time">Show a time entry field in the task editor</string>
+    <string name="info_opt_category">Show a category selector dropdown in the task editor</string>
+    <string name="info_opt_bullet_color">Show color pickers for bullet and text in the task editor</string>
+    <string name="info_opt_unified_color">A single color picker sets both bullet and text color at once</string>
+</resources>

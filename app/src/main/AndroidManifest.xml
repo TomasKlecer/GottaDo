@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:name=".GottaDoApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.GottaDo">
+
+        <!-- Disable default WorkManager initializer; we use HiltWorkerFactory via Configuration.Provider -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.GottaDo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".widget.GottaDoWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.GottaDoRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <activity
+            android:name=".record.RecordEditActivity"
+            android:exported="false"
+            android:theme="@style/Theme.GottaDo.Popup" />
+
+        <activity
+            android:name=".widget.ReorderOverlayActivity"
+            android:exported="false"
+            android:theme="@style/Theme.GottaDo.Translucent" />
+
+        <activity
+            android:name=".widget.WidgetTrampolineActivity"
+            android:exported="false"
+            android:theme="@style/Theme.GottaDo.TrampolineTransparent"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
+        <receiver
+            android:name=".widget.WidgetToggleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.klecer.gottado.widget.ACTION_TOGGLE_TASK_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
