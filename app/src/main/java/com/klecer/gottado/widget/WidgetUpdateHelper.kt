@@ -88,12 +88,17 @@ object WidgetUpdateHelper {
             }
         }
 
-        rv.setTextColor(R.id.widget_btn_open_app, config.defaultTextColor)
-        rv.setTextColor(R.id.widget_btn_reorder, config.defaultTextColor)
-        val openAppPi = WidgetIntents.openAppPendingIntent(context, widgetId, widgetId * 100 + 3)
-        rv.setOnClickPendingIntent(R.id.widget_btn_open_app, openAppPi)
-        val reorderPi = WidgetIntents.openReorderPendingIntent(context, widgetId, widgetId * 100 + 4)
-        rv.setOnClickPendingIntent(R.id.widget_btn_reorder, reorderPi)
+        if (config.buttonsAtBottom) {
+            rv.setViewVisibility(R.id.widget_footer_bar, View.GONE)
+        } else {
+            rv.setViewVisibility(R.id.widget_footer_bar, View.VISIBLE)
+            rv.setTextColor(R.id.widget_btn_open_app, config.defaultTextColor)
+            rv.setTextColor(R.id.widget_btn_reorder, config.defaultTextColor)
+            val openAppPi = WidgetIntents.openAppPendingIntent(context, widgetId, widgetId * 100 + 3)
+            rv.setOnClickPendingIntent(R.id.widget_btn_open_app, openAppPi)
+            val reorderPi = WidgetIntents.openReorderPendingIntent(context, widgetId, widgetId * 100 + 4)
+            rv.setOnClickPendingIntent(R.id.widget_btn_reorder, reorderPi)
+        }
 
         val serviceIntent = Intent(context, GottaDoRemoteViewsService::class.java).apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)

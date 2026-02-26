@@ -20,5 +20,6 @@ data class WidgetConfigEntity(
     @ColumnInfo(defaultValue = "-1") val subtitleColor: Int = -1,
     @ColumnInfo(defaultValue = "16") val bulletSizeDp: Int = 16,
     @ColumnInfo(defaultValue = "16") val checkboxSizeDp: Int = 16,
-    @ColumnInfo(defaultValue = "1") val showTitleOnWidget: Boolean = true
+    @ColumnInfo(defaultValue = "1") val showTitleOnWidget: Boolean = true,
+    @ColumnInfo(defaultValue = "0") val buttonsAtBottom: Boolean = false
 )

@@ -262,6 +262,12 @@ fun CategoryListScreen(
             label = stringResource(R.string.category_settings_show_calendar_icon),
             info = stringResource(R.string.info_cat_show_calendar_icon)
         )
+        CheckboxWithInfo(
+            checked = category!!.showDeleteButton,
+            onCheckedChange = viewModel::updateShowDeleteButton,
+            label = stringResource(R.string.category_settings_show_delete_button),
+            info = stringResource(R.string.info_cat_show_delete_button)
+        )
 
         LabelWithInfo(
             stringResource(R.string.category_settings_type),

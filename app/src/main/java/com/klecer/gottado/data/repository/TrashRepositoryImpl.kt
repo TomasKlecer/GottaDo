@@ -18,6 +18,10 @@ class TrashRepositoryImpl @Inject constructor(
     override suspend fun insert(entity: TrashEntryEntity): Long =
         dao.insert(entity)
 
+    override suspend fun updateContent(id: Long, contentHtml: String) {
+        dao.updateContent(id, contentHtml)
+    }
+
     override suspend fun deleteById(id: Long) {
         dao.deleteById(id)
     }

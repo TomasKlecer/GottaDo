@@ -11,7 +11,6 @@ interface TrashEntryDao {
     @Query("SELECT * FROM trash_entry ORDER BY deletedAtMillis DESC")
     suspend fun getAll(): List<TrashEntryEntity>
 
-    /** Get entries grouped by day (date at start of day in millis). Order: newest day first. */
     @Query("SELECT * FROM trash_entry ORDER BY deletedAtMillis DESC")
     suspend fun getAllOrderedByDeletedAt(): List<TrashEntryEntity>
 
@@ -20,6 +19,9 @@ interface TrashEntryDao {
 
     @Insert
     suspend fun insert(entity: TrashEntryEntity): Long
+
+    @Query("UPDATE trash_entry SET contentHtml = :contentHtml WHERE id = :id")
+    suspend fun updateContent(id: Long, contentHtml: String)
 
     @Query("DELETE FROM trash_entry WHERE id = :id")
     suspend fun deleteById(id: Long)

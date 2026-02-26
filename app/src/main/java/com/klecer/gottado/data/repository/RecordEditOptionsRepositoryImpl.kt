@@ -16,7 +16,9 @@ class RecordEditOptionsRepositoryImpl @Inject constructor(
         showTimeField = prefs.getBoolean(KEY_TIME, true),
         showCategoryDropdown = prefs.getBoolean(KEY_CATEGORY, true),
         showBulletColor = prefs.getBoolean(KEY_BULLET_COLOR, true),
-        useUnifiedColorPicker = prefs.getBoolean(KEY_UNIFIED_COLOR_PICKER, true)
+        showTextColor = prefs.getBoolean(KEY_TEXT_COLOR, true),
+        useUnifiedColorPicker = prefs.getBoolean(KEY_UNIFIED_COLOR_PICKER, true),
+        showCompletedCheckbox = prefs.getBoolean(KEY_COMPLETED_CHECKBOX, false)
     )
 
     override suspend fun set(options: RecordEditOptions) = withContext(Dispatchers.IO) {
@@ -25,7 +27,9 @@ class RecordEditOptionsRepositoryImpl @Inject constructor(
             .putBoolean(KEY_TIME, options.showTimeField)
             .putBoolean(KEY_CATEGORY, options.showCategoryDropdown)
             .putBoolean(KEY_BULLET_COLOR, options.showBulletColor)
+            .putBoolean(KEY_TEXT_COLOR, options.showTextColor)
             .putBoolean(KEY_UNIFIED_COLOR_PICKER, options.useUnifiedColorPicker)
+            .putBoolean(KEY_COMPLETED_CHECKBOX, options.showCompletedCheckbox)
             .apply()
     }
 
@@ -35,6 +39,8 @@ class RecordEditOptionsRepositoryImpl @Inject constructor(
         private const val KEY_TIME = "show_time_field"
         private const val KEY_CATEGORY = "show_category_dropdown"
         private const val KEY_BULLET_COLOR = "show_bullet_color"
+        private const val KEY_TEXT_COLOR = "show_text_color"
         private const val KEY_UNIFIED_COLOR_PICKER = "use_unified_color_picker"
+        private const val KEY_COMPLETED_CHECKBOX = "show_completed_checkbox"
     }
 }

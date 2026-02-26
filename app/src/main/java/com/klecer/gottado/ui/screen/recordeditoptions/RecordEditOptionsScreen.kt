@@ -71,10 +71,10 @@ fun RecordEditOptionsScreen(
                 info = stringResource(R.string.info_opt_category)
             )
             RowWithCheckboxAndInfo(
-                checked = options.showBulletColor,
-                onCheckedChange = viewModel::updateShowBulletColor,
-                label = stringResource(R.string.record_edit_options_bullet_color),
-                info = stringResource(R.string.info_opt_bullet_color)
+                checked = options.showCompletedCheckbox,
+                onCheckedChange = viewModel::updateShowCompletedCheckbox,
+                label = stringResource(R.string.record_edit_options_completed),
+                info = stringResource(R.string.info_opt_completed)
             )
             RowWithCheckboxAndInfo(
                 checked = options.useUnifiedColorPicker,
@@ -82,6 +82,20 @@ fun RecordEditOptionsScreen(
                 label = stringResource(R.string.record_edit_options_unified_color),
                 info = stringResource(R.string.info_opt_unified_color)
             )
+            if (!options.useUnifiedColorPicker) {
+                RowWithCheckboxAndInfo(
+                    checked = options.showBulletColor,
+                    onCheckedChange = viewModel::updateShowBulletColor,
+                    label = stringResource(R.string.record_edit_options_bullet_color),
+                    info = stringResource(R.string.info_opt_bullet_color)
+                )
+                RowWithCheckboxAndInfo(
+                    checked = options.showTextColor,
+                    onCheckedChange = viewModel::updateShowTextColor,
+                    label = stringResource(R.string.record_edit_options_text_color),
+                    info = stringResource(R.string.info_opt_text_color)
+                )
+            }
         }
     }
 }

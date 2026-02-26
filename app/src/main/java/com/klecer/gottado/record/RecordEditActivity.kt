@@ -102,15 +102,18 @@ class RecordEditActivity : ComponentActivity() {
         viewModel.init(taskId, categoryId, widgetId, widgetTextColor)
 
         val options = getRecordEditOptionsUseCase()
-        val showBullet = options.showBulletColor
         unifiedColorMode = options.useUnifiedColorPicker
-        findViewById<View>(R.id.record_edit_bullet_section).visibility = if (showBullet) View.VISIBLE else View.GONE
-        findViewById<View>(R.id.record_edit_text_color_section).visibility = if (showBullet && !unifiedColorMode) View.VISIBLE else View.GONE
         if (unifiedColorMode) {
+            findViewById<View>(R.id.record_edit_bullet_section).visibility = View.VISIBLE
+            findViewById<View>(R.id.record_edit_text_color_section).visibility = View.GONE
             findViewById<android.widget.TextView>(R.id.record_edit_bullet_label).text = getString(R.string.record_edit_color)
+        } else {
+            findViewById<View>(R.id.record_edit_bullet_section).visibility = if (options.showBulletColor) View.VISIBLE else View.GONE
+            findViewById<View>(R.id.record_edit_text_color_section).visibility = if (options.showTextColor) View.VISIBLE else View.GONE
         }
         findViewById<View>(R.id.record_edit_time_section).visibility = if (options.showTimeField) View.VISIBLE else View.GONE
         findViewById<View>(R.id.record_edit_category_section).visibility = if (options.showCategoryDropdown) View.VISIBLE else View.GONE
+        completedCheckbox.visibility = if (options.showCompletedCheckbox) View.VISIBLE else View.GONE
 
         setupBulletColors()
         setupTextColors()

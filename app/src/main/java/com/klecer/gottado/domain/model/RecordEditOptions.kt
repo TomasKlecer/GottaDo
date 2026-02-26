@@ -9,5 +9,7 @@ data class RecordEditOptions(
     val showTimeField: Boolean = true,
     val showCategoryDropdown: Boolean = false,
     val showBulletColor: Boolean = true,
-    val useUnifiedColorPicker: Boolean = true
+    val showTextColor: Boolean = true,
+    val useUnifiedColorPicker: Boolean = true,
+    val showCompletedCheckbox: Boolean = false
 )

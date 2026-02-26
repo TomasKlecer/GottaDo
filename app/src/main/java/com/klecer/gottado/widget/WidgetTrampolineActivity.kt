@@ -64,12 +64,21 @@ class WidgetTrampolineActivity : Activity() {
                 }
             }
             WidgetIntents.ACTION_OPEN_CATEGORY_SETTINGS -> {
-                val categoryId = intent.getLongExtra(WidgetIntents.EXTRA_CATEGORY_ID, -1L)
-                if (categoryId != -1L) {
-                    startActivity(Intent(this, com.klecer.gottado.MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        putExtra("navigate_to", "category_settings/$categoryId")
-                    })
+                startActivity(Intent(this, com.klecer.gottado.MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    putExtra("navigate_to", "category_list")
+                })
+            }
+            WidgetIntents.ACTION_DELETE_TASK -> {
+                val taskId = intent.getLongExtra(WidgetIntents.EXTRA_TASK_ID, -1L)
+                if (widgetId != -1 && taskId != -1L) {
+                    val trashId = runBlocking {
+                        applicationContext.widgetEntryPoint().getDeleteTaskUseCase().invoke(taskId)
+                    }
+                    if (trashId != null) {
+                        WidgetUndoHelper.storePendingUndo(applicationContext, trashId, widgetId)
+                    }
+                    WidgetUpdateHelper.update(applicationContext, widgetId)
                 }
             }
             WidgetIntents.ACTION_UNDO_DELETE -> {

@@ -28,7 +28,8 @@ class CategoryRepositoryImpl @Inject constructor(
             categoryType = entity.categoryType,
             color = entity.color,
             syncWithCalendarToday = entity.syncWithCalendarToday,
-            showCalendarIcon = entity.showCalendarIcon
+            showCalendarIcon = entity.showCalendarIcon,
+            showDeleteButton = entity.showDeleteButton
         )
     }
 

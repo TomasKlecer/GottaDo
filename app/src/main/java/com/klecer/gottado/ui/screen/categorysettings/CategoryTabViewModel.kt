@@ -166,4 +166,9 @@ class CategoryTabViewModel @Inject constructor(
         _category.value = _category.value?.copy(showCalendarIcon = value)
         autoSave()
     }
+
+    fun updateShowDeleteButton(value: Boolean) {
+        _category.value = _category.value?.copy(showDeleteButton = value)
+        autoSave()
+    }
 }

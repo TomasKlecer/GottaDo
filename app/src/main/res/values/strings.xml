@@ -63,11 +63,13 @@
     <string name="category_type_saturday">Saturday</string>
     <string name="category_type_sunday">Sunday</string>
 
-    <string name="record_edit_options_title">Record edit options</string>
+    <string name="record_edit_options_title">Entry options</string>
     <string name="record_edit_options_rich_text">Allow rich text</string>
     <string name="record_edit_options_time">Show time field</string>
     <string name="record_edit_options_category">Show category dropdown</string>
     <string name="record_edit_options_bullet_color">Show bullet color</string>
+    <string name="record_edit_options_text_color">Show text color</string>
+    <string name="record_edit_options_completed">Show completed checkbox</string>
     <string name="record_edit_options_save">Save</string>
 
     <string name="category_settings_manage_routines">Manage routines</string>
@@ -90,13 +92,22 @@
 
     <string name="tab_widgets">Widgets</string>
     <string name="tab_categories">Categories</string>
-    <string name="tab_edit_options">Edit options</string>
-    <string name="tab_trash">Trash</string>
+    <string name="tab_edit_options">Entry options</string>
+    <string name="tab_trash">History</string>
 
-    <string name="trash_title">Trash</string>
-    <string name="trash_empty">Empty trash</string>
+    <string name="trash_title">History</string>
+    <string name="trash_empty">Delete all</string>
     <string name="trash_restore">Restore</string>
     <string name="trash_delete_permanent">Delete permanently</string>
+    <string name="history_view_by_category">By category</string>
+    <string name="history_view_by_time">By time</string>
+    <string name="history_edit">Edit</string>
+    <string name="history_save">Save</string>
+    <string name="history_delete_all_title">Delete all entries?</string>
+    <string name="history_delete_all_message">This will permanently delete all entries in the history. This action cannot be undone.</string>
+    <string name="history_delete_all_confirm">Delete all</string>
+    <string name="history_delete_all_cancel">Cancel</string>
+    <string name="history_no_entries">No entries in history</string>
 
     <string name="unsaved_changes_title">Unsaved changes</string>
     <string name="unsaved_changes_message">You have unsaved changes on this page.</string>
@@ -124,6 +135,8 @@
     <string name="info_widget_cat_font_size">Font size for category headers on the widget</string>
     <string name="info_widget_record_font_size">Font size for task entries on the widget</string>
     <string name="info_widget_reorder_handle">Tap strip on the widget edge to open the reorder overlay (LEFT/RIGHT), or NONE to hide</string>
+    <string name="widget_settings_buttons_at_bottom">Place buttons below entries</string>
+    <string name="info_widget_buttons_at_bottom">When enabled, Open App and Reorder buttons are placed below all entries (scrollable). Otherwise they float at the bottom of the widget.</string>
 
     <string name="info_cat_color">Color used for the category header and its task bullets</string>
     <string name="info_cat_checkbox">Display checkboxes instead of bullet dots for tasks in this category</string>
@@ -134,7 +147,9 @@
     <string name="info_opt_rich_text">Enable rich text formatting in task entries</string>
     <string name="info_opt_time">Show a time entry field in the task editor</string>
     <string name="info_opt_category">Show a category selector dropdown in the task editor</string>
-    <string name="info_opt_bullet_color">Show color pickers for bullet and text in the task editor</string>
+    <string name="info_opt_bullet_color">Show bullet color picker in the task editor</string>
+    <string name="info_opt_text_color">Show text color picker in the task editor</string>
+    <string name="info_opt_completed">Show a completed checkbox in the task editor</string>
     <string name="info_opt_unified_color">A single color picker sets both bullet and text color at once</string>
 
     <string name="settings_title">Settings</string>
@@ -151,4 +166,6 @@
     <string name="category_settings_sync_calendar">Sync with today\'s calendar events</string>
     <string name="category_settings_show_calendar_icon">Show calendar icon on synced entries</string>
     <string name="info_cat_show_calendar_icon">Display a small calendar icon next to task entries that were imported from your calendar</string>
+    <string name="category_settings_show_delete_button">Show delete button on entries</string>
+    <string name="info_cat_show_delete_button">Show a trash icon on each entry in this category for quick deletion directly from the widget</string>
 </resources>

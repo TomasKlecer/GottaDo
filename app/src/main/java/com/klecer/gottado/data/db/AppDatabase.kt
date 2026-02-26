@@ -31,7 +31,7 @@ import com.klecer.gottado.data.db.entity.WidgetConfigEntity
         TrashEntryEntity::class,
         CalendarDismissedEntity::class
     ],
-    version = 8,
+    version = 10,
     exportSchema = true
 )
 @TypeConverters(AppConverters::class)
@@ -84,6 +84,16 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE category ADD COLUMN showCalendarIcon INTEGER NOT NULL DEFAULT 1")
                 db.execSQL("CREATE TABLE IF NOT EXISTS calendar_dismissed (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, categoryId INTEGER NOT NULL, eventTitle TEXT NOT NULL)")
                 db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_calendar_dismissed_categoryId_eventTitle ON calendar_dismissed (categoryId, eventTitle)")
+            }
+        }
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE category ADD COLUMN showDeleteButton INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE widget_config ADD COLUMN buttonsAtBottom INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

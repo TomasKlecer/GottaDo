@@ -282,6 +282,19 @@ fun WidgetListScreen(
                 }
             }
         }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 12.dp)
+        ) {
+            Checkbox(
+                checked = config!!.buttonsAtBottom,
+                onCheckedChange = { viewModel.updateButtonsAtBottom(it) }
+            )
+            Text(stringResource(R.string.widget_settings_buttons_at_bottom))
+            Spacer(Modifier.width(4.dp))
+            InfoIcon(stringResource(R.string.info_widget_buttons_at_bottom))
+        }
     }
 }
 

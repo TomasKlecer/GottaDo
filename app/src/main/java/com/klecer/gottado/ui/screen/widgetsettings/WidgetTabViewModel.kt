@@ -191,6 +191,11 @@ class WidgetTabViewModel @Inject constructor(
         autoSave()
     }
 
+    fun updateButtonsAtBottom(atBottom: Boolean) {
+        _config.value = _config.value?.copy(buttonsAtBottom = atBottom)
+        autoSave()
+    }
+
     fun setCategoryVisible(categoryId: Long, visible: Boolean) {
         val wId = _selectedWidgetId.value ?: return
         viewModelScope.launch {

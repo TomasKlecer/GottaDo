@@ -6,8 +6,6 @@ import com.klecer.gottado.domain.model.RecordEditOptions
 import com.klecer.gottado.domain.usecase.GetRecordEditOptionsUseCase
 import com.klecer.gottado.domain.usecase.SaveRecordEditOptionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,42 +21,48 @@ class RecordEditOptionsViewModel @Inject constructor(
     private val _options = MutableStateFlow(RecordEditOptions())
     val options: StateFlow<RecordEditOptions> = _options.asStateFlow()
 
-    private var saveJob: Job? = null
-
     init {
         _options.value = getRecordEditOptionsUseCase()
     }
 
-    private fun autoSave() {
-        saveJob?.cancel()
-        saveJob = viewModelScope.launch {
-            delay(300)
+    private fun save() {
+        viewModelScope.launch {
             saveRecordEditOptionsUseCase(_options.value)
         }
     }
 
     fun updateShowRichText(value: Boolean) {
         _options.value = _options.value.copy(showRichText = value)
-        autoSave()
+        save()
     }
 
     fun updateShowTimeField(value: Boolean) {
         _options.value = _options.value.copy(showTimeField = value)
-        autoSave()
+        save()
     }
 
     fun updateShowCategoryDropdown(value: Boolean) {
         _options.value = _options.value.copy(showCategoryDropdown = value)
-        autoSave()
+        save()
     }
 
     fun updateShowBulletColor(value: Boolean) {
         _options.value = _options.value.copy(showBulletColor = value)
-        autoSave()
+        save()
+    }
+
+    fun updateShowTextColor(value: Boolean) {
+        _options.value = _options.value.copy(showTextColor = value)
+        save()
     }
 
     fun updateUseUnifiedColorPicker(value: Boolean) {
         _options.value = _options.value.copy(useUnifiedColorPicker = value)
-        autoSave()
+        save()
+    }
+
+    fun updateShowCompletedCheckbox(value: Boolean) {
+        _options.value = _options.value.copy(showCompletedCheckbox = value)
+        save()
     }
 }

@@ -14,6 +14,7 @@ object WidgetIntents {
     const val ACTION_OPEN_REORDER = "com.klecer.gottado.widget.ACTION_OPEN_REORDER"
     const val ACTION_OPEN_CATEGORY_SETTINGS = "com.klecer.gottado.widget.ACTION_OPEN_CATEGORY_SETTINGS"
     const val ACTION_UNDO_DELETE = "com.klecer.gottado.widget.ACTION_UNDO_DELETE"
+    const val ACTION_DELETE_TASK = "com.klecer.gottado.widget.ACTION_DELETE_TASK"
     const val ACTION_MOVE_TASK_UP = "com.klecer.gottado.widget.ACTION_MOVE_TASK_UP"
     const val ACTION_MOVE_TASK_DOWN = "com.klecer.gottado.widget.ACTION_MOVE_TASK_DOWN"
     const val ACTION_LIST_CLICK = "com.klecer.gottado.widget.ACTION_LIST_CLICK"

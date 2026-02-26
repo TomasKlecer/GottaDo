@@ -36,6 +36,7 @@ class GetWidgetStateUseCase @Inject constructor(
                 tasksWithTimeFirst = category.tasksWithTimeFirst,
                 color = category.color,
                 showCalendarIcon = category.showCalendarIcon,
+                showDeleteButton = category.showDeleteButton,
                 tasks = tasks.map { t ->
                     TaskItem(
                         id = t.id,

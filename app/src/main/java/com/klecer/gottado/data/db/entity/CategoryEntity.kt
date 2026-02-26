@@ -17,5 +17,7 @@ data class CategoryEntity(
     @ColumnInfo(defaultValue = "0")
     val syncWithCalendarToday: Boolean = false,
     @ColumnInfo(defaultValue = "1")
-    val showCalendarIcon: Boolean = true
+    val showCalendarIcon: Boolean = true,
+    @ColumnInfo(defaultValue = "0")
+    val showDeleteButton: Boolean = false
 )

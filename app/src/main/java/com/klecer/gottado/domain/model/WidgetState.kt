@@ -14,7 +14,8 @@ data class CategoryBlock(
     val tasksWithTimeFirst: Boolean,
     val tasks: List<TaskItem>,
     val color: Int = 0,
-    val showCalendarIcon: Boolean = true
+    val showCalendarIcon: Boolean = true,
+    val showDeleteButton: Boolean = false
 )
 
 data class TaskItem(

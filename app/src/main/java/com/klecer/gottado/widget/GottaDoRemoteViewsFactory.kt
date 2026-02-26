@@ -68,8 +68,11 @@ class GottaDoRemoteViewsFactory(
         for (block in state.categoryBlocks) {
             list.add(WidgetListItem.CategoryRow(block))
             for (task in block.tasks) {
-                list.add(WidgetListItem.RecordRow(task, block.showCheckboxInsteadOfBullet, block.showCalendarIcon))
+                list.add(WidgetListItem.RecordRow(task, block.showCheckboxInsteadOfBullet, block.showCalendarIcon, block.showDeleteButton))
             }
+        }
+        if (state.config.buttonsAtBottom) {
+            list.add(WidgetListItem.Footer)
         }
         return list
     }
@@ -89,10 +92,10 @@ class GottaDoRemoteViewsFactory(
                     else RemoteViews(context.packageName, R.layout.widget_item_footer)
                 }
                 is WidgetListItem.RecordRow -> {
-                    if (config != null) buildRecordRow(config, item.task, item.showCheckbox, id, item.showCalendarIcon)
+                    if (config != null) buildRecordRow(config, item.task, item.showCheckbox, id, item.showCalendarIcon, item.showDeleteButton)
                     else RemoteViews(context.packageName, R.layout.widget_item_footer)
                 }
-                is WidgetListItem.Footer -> RemoteViews(context.packageName, R.layout.widget_item_footer)
+                is WidgetListItem.Footer -> buildFooter(id)
                 is WidgetListItem.UndoDelete -> buildUndoRow(item.trashId, id)
                 is WidgetListItem.HintText -> buildHintRow(item.message)
             }
@@ -135,7 +138,8 @@ class GottaDoRemoteViewsFactory(
         task: com.klecer.gottado.domain.model.TaskItem,
         showCheckbox: Boolean,
         widgetId: Int,
-        showCalendarIcon: Boolean = false
+        showCalendarIcon: Boolean = false,
+        showDeleteButton: Boolean = false
     ): RemoteViews {
         val layoutId = if (showCheckbox) R.layout.widget_item_record_checkbox else R.layout.widget_item_record
         val rv = RemoteViews(context.packageName, layoutId)
@@ -199,6 +203,18 @@ class GottaDoRemoteViewsFactory(
             rv.setViewVisibility(R.id.widget_record_calendar_icon, android.view.View.GONE)
         }
 
+        if (showDeleteButton) {
+            rv.setViewVisibility(R.id.widget_record_delete, android.view.View.VISIBLE)
+            val deleteFillIn = Intent().apply {
+                putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
+                putExtra(WidgetIntents.EXTRA_TASK_ID, task.id)
+                putExtra("action", WidgetIntents.ACTION_DELETE_TASK)
+            }
+            rv.setOnClickFillInIntent(R.id.widget_record_delete, deleteFillIn)
+        } else {
+            rv.setViewVisibility(R.id.widget_record_delete, android.view.View.GONE)
+        }
+
         val editFillIn = Intent().apply {
             putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
             putExtra(WidgetIntents.EXTRA_TASK_ID, task.id)
@@ -218,6 +234,7 @@ class GottaDoRemoteViewsFactory(
 
     private fun buildUndoRow(trashId: Long, widgetId: Int): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_item_undo)
+        rv.setTextViewText(R.id.widget_undo_btn, context.getString(R.string.widget_undo_delete))
         rv.setTextColor(R.id.widget_undo_btn, 0xFF4CAF50.toInt())
         val fillIn = Intent().apply {
             putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)

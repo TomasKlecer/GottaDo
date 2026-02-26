@@ -5,6 +5,7 @@ import android.graphics.Color
 import com.klecer.gottado.data.db.entity.ReorderHandlePosition
 import com.klecer.gottado.data.db.entity.WidgetConfigEntity
 import com.klecer.gottado.domain.repository.WidgetConfigRepository
+import com.klecer.gottado.domain.usecase.DeleteTaskUseCase
 import com.klecer.gottado.domain.usecase.GetWidgetStateUseCase
 import com.klecer.gottado.domain.usecase.ReorderTasksUseCase
 import com.klecer.gottado.domain.usecase.RestoreFromTrashUseCase
@@ -26,6 +27,7 @@ interface WidgetEntryPoint {
     fun getToggleTaskCompletedUseCase(): ToggleTaskCompletedUseCase
     fun getRestoreFromTrashUseCase(): RestoreFromTrashUseCase
     fun getReorderTasksUseCase(): ReorderTasksUseCase
+    fun getDeleteTaskUseCase(): DeleteTaskUseCase
 }
 
 fun Context.widgetEntryPoint(): WidgetEntryPoint =
