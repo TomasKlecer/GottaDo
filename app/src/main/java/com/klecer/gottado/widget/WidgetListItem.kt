@@ -8,7 +8,7 @@ import com.klecer.gottado.domain.model.TaskItem
  */
 sealed class WidgetListItem {
     data class CategoryRow(val block: CategoryBlock) : WidgetListItem()
-    data class RecordRow(val task: TaskItem, val showCheckbox: Boolean) : WidgetListItem()
+    data class RecordRow(val task: TaskItem, val showCheckbox: Boolean, val showCalendarIcon: Boolean = false) : WidgetListItem()
     object Footer : WidgetListItem()
     data class UndoDelete(val trashId: Long) : WidgetListItem()
     data class HintText(val message: String) : WidgetListItem()

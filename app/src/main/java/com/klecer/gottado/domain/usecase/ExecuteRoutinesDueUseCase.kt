@@ -1,5 +1,7 @@
 package com.klecer.gottado.domain.usecase
 
+import com.klecer.gottado.data.db.dao.CalendarDismissedDao
+import com.klecer.gottado.data.db.entity.CalendarDismissedEntity
 import com.klecer.gottado.data.db.entity.RoutineEntity
 import com.klecer.gottado.data.db.entity.RoutineFrequency
 import com.klecer.gottado.data.db.entity.RoutineTaskAction
@@ -23,7 +25,8 @@ class ExecuteRoutinesDueUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
     private val trashRepository: TrashRepository,
     private val categoryRepository: CategoryRepository,
-    private val widgetCategoryRepository: WidgetCategoryRepository
+    private val widgetCategoryRepository: WidgetCategoryRepository,
+    private val calendarDismissedDao: CalendarDismissedDao
 ) {
     /**
      * @return set of widgetIds that need visual refresh
@@ -95,6 +98,14 @@ class ExecuteRoutinesDueUseCase @Inject constructor(
         val task = taskRepository.getById(taskId) ?: return
         when (action) {
             RoutineTaskAction.DELETE -> {
+                if (task.fromCalendarSync) {
+                    calendarDismissedDao.insert(
+                        CalendarDismissedEntity(
+                            categoryId = currentCategoryId,
+                            eventTitle = task.contentHtml.trim()
+                        )
+                    )
+                }
                 trashRepository.insert(
                     TrashEntryEntity(
                         originalCategoryId = currentCategoryId,

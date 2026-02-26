@@ -250,6 +250,18 @@ fun CategoryListScreen(
             label = stringResource(R.string.category_settings_tasks_time_first),
             info = stringResource(R.string.info_cat_time_first)
         )
+        CheckboxWithInfo(
+            checked = category!!.syncWithCalendarToday,
+            onCheckedChange = viewModel::updateSyncWithCalendarToday,
+            label = stringResource(R.string.category_settings_sync_calendar),
+            info = stringResource(R.string.info_cat_calendar_sync)
+        )
+        CheckboxWithInfo(
+            checked = category!!.showCalendarIcon,
+            onCheckedChange = viewModel::updateShowCalendarIcon,
+            label = stringResource(R.string.category_settings_show_calendar_icon),
+            info = stringResource(R.string.info_cat_show_calendar_icon)
+        )
 
         LabelWithInfo(
             stringResource(R.string.category_settings_type),

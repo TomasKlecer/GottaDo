@@ -1,5 +1,7 @@
 package com.klecer.gottado.domain.usecase
 
+import com.klecer.gottado.data.db.dao.CalendarDismissedDao
+import com.klecer.gottado.data.db.entity.CalendarDismissedEntity
 import com.klecer.gottado.data.db.entity.TrashEntryEntity
 import com.klecer.gottado.domain.repository.CategoryRepository
 import com.klecer.gottado.domain.repository.TaskRepository
@@ -8,16 +10,28 @@ import javax.inject.Inject
 
 /**
  * Deletes task from tasks and moves it to trash (soft delete for restore).
+ * If the task originated from calendar sync, records the title so it won't be re-synced.
  * @return the created trash entry id for Undo, or null if task not found
  */
 class DeleteTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
     private val trashRepository: TrashRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val calendarDismissedDao: CalendarDismissedDao
 ) {
     suspend operator fun invoke(taskId: Long): Long? {
         val task = taskRepository.getById(taskId) ?: return null
         val categoryName = categoryRepository.getById(task.categoryId)?.name ?: ""
+
+        if (task.fromCalendarSync) {
+            calendarDismissedDao.insert(
+                CalendarDismissedEntity(
+                    categoryId = task.categoryId,
+                    eventTitle = task.contentHtml.trim()
+                )
+            )
+        }
+
         val trashId = trashRepository.insert(
             TrashEntryEntity(
                 originalCategoryId = task.categoryId,

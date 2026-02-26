@@ -29,5 +29,7 @@ data class TaskEntity(
     val scheduledTimeMillis: Long? = null,
     val sortOrder: Int,
     val createdAtMillis: Long,
-    val updatedAtMillis: Long
+    val updatedAtMillis: Long,
+    @ColumnInfo(defaultValue = "0")
+    val fromCalendarSync: Boolean = false
 )

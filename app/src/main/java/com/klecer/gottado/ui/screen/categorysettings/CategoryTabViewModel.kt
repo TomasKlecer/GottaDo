@@ -17,6 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -46,9 +47,21 @@ class CategoryTabViewModel @Inject constructor(
     val routines: StateFlow<List<RoutineEntity>> = _routines.asStateFlow()
 
     private var saveJob: Job? = null
+    private var hasPendingChanges = false
 
     init {
         loadCategories()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (hasPendingChanges) {
+            saveJob?.cancel()
+            val cat = _category.value ?: return
+            runBlocking {
+                saveCategoryUseCase(cat)
+            }
+        }
     }
 
     private fun loadCategories() {
@@ -104,11 +117,13 @@ class CategoryTabViewModel @Inject constructor(
     }
 
     private fun autoSave() {
+        hasPendingChanges = true
         saveJob?.cancel()
         saveJob = viewModelScope.launch {
             delay(500)
             val cat = _category.value ?: return@launch
             saveCategoryUseCase(cat)
+            hasPendingChanges = false
             val catId = _selectedCategoryId.value ?: return@launch
             widgetCategoryRepository.getWidgetIdsForCategory(catId).forEach { widgetId ->
                 WidgetUpdateHelper.update(appContext, widgetId)
@@ -139,6 +154,16 @@ class CategoryTabViewModel @Inject constructor(
 
     fun updateColor(color: Int) {
         _category.value = _category.value?.copy(color = color)
+        autoSave()
+    }
+
+    fun updateSyncWithCalendarToday(value: Boolean) {
+        _category.value = _category.value?.copy(syncWithCalendarToday = value)
+        autoSave()
+    }
+
+    fun updateShowCalendarIcon(value: Boolean) {
+        _category.value = _category.value?.copy(showCalendarIcon = value)
         autoSave()
     }
 }

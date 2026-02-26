@@ -68,7 +68,7 @@ class GottaDoRemoteViewsFactory(
         for (block in state.categoryBlocks) {
             list.add(WidgetListItem.CategoryRow(block))
             for (task in block.tasks) {
-                list.add(WidgetListItem.RecordRow(task, block.showCheckboxInsteadOfBullet))
+                list.add(WidgetListItem.RecordRow(task, block.showCheckboxInsteadOfBullet, block.showCalendarIcon))
             }
         }
         return list
@@ -89,7 +89,7 @@ class GottaDoRemoteViewsFactory(
                     else RemoteViews(context.packageName, R.layout.widget_item_footer)
                 }
                 is WidgetListItem.RecordRow -> {
-                    if (config != null) buildRecordRow(config, item.task, item.showCheckbox, id)
+                    if (config != null) buildRecordRow(config, item.task, item.showCheckbox, id, item.showCalendarIcon)
                     else RemoteViews(context.packageName, R.layout.widget_item_footer)
                 }
                 is WidgetListItem.Footer -> RemoteViews(context.packageName, R.layout.widget_item_footer)
@@ -134,7 +134,8 @@ class GottaDoRemoteViewsFactory(
         config: com.klecer.gottado.data.db.entity.WidgetConfigEntity,
         task: com.klecer.gottado.domain.model.TaskItem,
         showCheckbox: Boolean,
-        widgetId: Int
+        widgetId: Int,
+        showCalendarIcon: Boolean = false
     ): RemoteViews {
         val layoutId = if (showCheckbox) R.layout.widget_item_record_checkbox else R.layout.widget_item_record
         val rv = RemoteViews(context.packageName, layoutId)
@@ -190,6 +191,12 @@ class GottaDoRemoteViewsFactory(
                 putExtra("action", WidgetIntents.ACTION_TOGGLE_TASK_COMPLETED)
             }
             rv.setOnClickFillInIntent(R.id.widget_record_bullet, toggleFillIn)
+        }
+
+        if (task.fromCalendarSync && showCalendarIcon) {
+            rv.setViewVisibility(R.id.widget_record_calendar_icon, android.view.View.VISIBLE)
+        } else {
+            rv.setViewVisibility(R.id.widget_record_calendar_icon, android.view.View.GONE)
         }
 
         val editFillIn = Intent().apply {

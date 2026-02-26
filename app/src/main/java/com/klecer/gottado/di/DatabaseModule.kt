@@ -3,6 +3,7 @@ package com.klecer.gottado.di
 import android.content.Context
 import androidx.room.Room
 import com.klecer.gottado.data.db.AppDatabase
+import com.klecer.gottado.data.db.dao.CalendarDismissedDao
 import com.klecer.gottado.data.db.dao.CategoryDao
 import com.klecer.gottado.data.db.dao.RoutineDao
 import com.klecer.gottado.data.db.dao.TaskDao
@@ -24,7 +25,7 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "gottado.db")
-            .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3, AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6)
+            .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3, AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7, AppDatabase.MIGRATION_7_8)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
@@ -51,4 +52,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideTrashEntryDao(db: AppDatabase): TrashEntryDao = db.trashEntryDao()
+
+    @Provides
+    @Singleton
+    fun provideCalendarDismissedDao(db: AppDatabase): CalendarDismissedDao = db.calendarDismissedDao()
 }

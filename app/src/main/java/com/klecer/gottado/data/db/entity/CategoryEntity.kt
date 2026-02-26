@@ -13,5 +13,9 @@ data class CategoryEntity(
     val tasksWithTimeFirst: Boolean = true,
     val categoryType: String = "normal",
     @ColumnInfo(defaultValue = "0")
-    val color: Int = 0
+    val color: Int = 0,
+    @ColumnInfo(defaultValue = "0")
+    val syncWithCalendarToday: Boolean = false,
+    @ColumnInfo(defaultValue = "1")
+    val showCalendarIcon: Boolean = true
 )

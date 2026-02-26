@@ -16,6 +16,8 @@ import com.klecer.gottado.ui.screen.routineedit.RoutineEditScreen
 import com.klecer.gottado.ui.screen.routineedit.RoutineEditViewModel
 import com.klecer.gottado.ui.screen.routinelist.RoutineListScreen
 import com.klecer.gottado.ui.screen.routinelist.RoutineListViewModel
+import com.klecer.gottado.ui.screen.settings.SettingsScreen
+import com.klecer.gottado.ui.screen.settings.SettingsViewModel
 import com.klecer.gottado.ui.screen.trash.TrashScreen
 import com.klecer.gottado.ui.screen.trash.TrashViewModel
 import com.klecer.gottado.ui.screen.widgetlist.WidgetListScreen
@@ -97,6 +99,10 @@ fun AppNavigation(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() }
             )
+        }
+        composable(NavRoutes.SETTINGS) {
+            val viewModel: SettingsViewModel = hiltViewModel()
+            SettingsScreen(viewModel = viewModel)
         }
     }
 }

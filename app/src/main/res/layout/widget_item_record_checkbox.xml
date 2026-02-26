@@ -41,4 +41,14 @@
             android:textColor="#FF888888"
             android:visibility="gone" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_record_calendar_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="4dp"
+        android:text="📅"
+        android:textSize="12sp"
+        android:visibility="gone" />
 </LinearLayout>

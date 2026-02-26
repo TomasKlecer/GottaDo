@@ -9,6 +9,7 @@ object NavRoutes {
     const val ROUTINE_LIST = "routine_list/{categoryId}"
     const val ROUTINE_EDIT = "routine_edit/{categoryId}/{routineId}"
     const val TRASH = "trash"
+    const val SETTINGS = "settings"
 
     fun widgetSettings(widgetId: Int) = "widget_settings/$widgetId"
     fun categorySettings(categoryId: Long) = "category_settings/$categoryId"

@@ -35,6 +35,7 @@ class GetWidgetStateUseCase @Inject constructor(
                 showCheckboxInsteadOfBullet = category.showCheckboxInsteadOfBullet,
                 tasksWithTimeFirst = category.tasksWithTimeFirst,
                 color = category.color,
+                showCalendarIcon = category.showCalendarIcon,
                 tasks = tasks.map { t ->
                     TaskItem(
                         id = t.id,
@@ -43,7 +44,8 @@ class GetWidgetStateUseCase @Inject constructor(
                         bulletColor = t.bulletColor,
                         textColor = t.textColor,
                         scheduledTimeMillis = t.scheduledTimeMillis,
-                        sortOrder = t.sortOrder
+                        sortOrder = t.sortOrder,
+                        fromCalendarSync = t.fromCalendarSync
                     )
                 }
             )

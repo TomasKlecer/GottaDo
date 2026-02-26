@@ -13,7 +13,8 @@ data class CategoryBlock(
     val showCheckboxInsteadOfBullet: Boolean,
     val tasksWithTimeFirst: Boolean,
     val tasks: List<TaskItem>,
-    val color: Int = 0
+    val color: Int = 0,
+    val showCalendarIcon: Boolean = true
 )
 
 data class TaskItem(
@@ -23,5 +24,6 @@ data class TaskItem(
     val bulletColor: Int,
     val textColor: Int = 0,
     val scheduledTimeMillis: Long?,
-    val sortOrder: Int = 0
+    val sortOrder: Int = 0,
+    val fromCalendarSync: Boolean = false
 )

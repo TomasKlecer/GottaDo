@@ -136,4 +136,19 @@
     <string name="info_opt_category">Show a category selector dropdown in the task editor</string>
     <string name="info_opt_bullet_color">Show color pickers for bullet and text in the task editor</string>
     <string name="info_opt_unified_color">A single color picker sets both bullet and text color at once</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_calendar_section">Google Calendar sync</string>
+    <string name="settings_calendar_enable">Enable calendar sync</string>
+    <string name="settings_calendar_enable_desc">Sync today\'s calendar events into categories that have calendar sync enabled</string>
+    <string name="settings_calendar_frequency">Sync frequency</string>
+    <string name="settings_calendar_sync_now">Sync now</string>
+    <string name="settings_calendar_last_sync">Last sync: %s</string>
+    <string name="settings_calendar_last_sync_never">Last sync: never</string>
+    <string name="settings_calendar_permission">Calendar permission required</string>
+    <string name="settings_calendar_grant_permission">Grant permission</string>
+    <string name="info_cat_calendar_sync">When enabled, today\'s calendar events will be added as task entries in this category during sync</string>
+    <string name="category_settings_sync_calendar">Sync with today\'s calendar events</string>
+    <string name="category_settings_show_calendar_icon">Show calendar icon on synced entries</string>
+    <string name="info_cat_show_calendar_icon">Display a small calendar icon next to task entries that were imported from your calendar</string>
 </resources>

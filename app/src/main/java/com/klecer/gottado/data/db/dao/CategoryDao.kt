@@ -21,8 +21,8 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entities: List<CategoryEntity>)
 
-    @Query("UPDATE category SET name = :name, sortOrder = :sortOrder, showCheckboxInsteadOfBullet = :showCheckboxInsteadOfBullet, tasksWithTimeFirst = :tasksWithTimeFirst, categoryType = :categoryType, color = :color WHERE id = :id")
-    suspend fun update(id: Long, name: String, sortOrder: Int, showCheckboxInsteadOfBullet: Boolean, tasksWithTimeFirst: Boolean, categoryType: String, color: Int)
+    @Query("UPDATE category SET name = :name, sortOrder = :sortOrder, showCheckboxInsteadOfBullet = :showCheckboxInsteadOfBullet, tasksWithTimeFirst = :tasksWithTimeFirst, categoryType = :categoryType, color = :color, syncWithCalendarToday = :syncWithCalendarToday, showCalendarIcon = :showCalendarIcon WHERE id = :id")
+    suspend fun update(id: Long, name: String, sortOrder: Int, showCheckboxInsteadOfBullet: Boolean, tasksWithTimeFirst: Boolean, categoryType: String, color: Int, syncWithCalendarToday: Boolean, showCalendarIcon: Boolean)
 
     @Query("DELETE FROM category WHERE id = :id")
     suspend fun deleteById(id: Long)

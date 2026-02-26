@@ -26,7 +26,9 @@ class CategoryRepositoryImpl @Inject constructor(
             showCheckboxInsteadOfBullet = entity.showCheckboxInsteadOfBullet,
             tasksWithTimeFirst = entity.tasksWithTimeFirst,
             categoryType = entity.categoryType,
-            color = entity.color
+            color = entity.color,
+            syncWithCalendarToday = entity.syncWithCalendarToday,
+            showCalendarIcon = entity.showCalendarIcon
         )
     }
 

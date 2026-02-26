@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,9 +54,19 @@ class WidgetTabViewModel @Inject constructor(
     val allCategories: StateFlow<List<CategoryEntity>> = _allCategories.asStateFlow()
 
     private var saveJob: Job? = null
+    private var hasPendingChanges = false
 
     init {
         loadWidgets()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (hasPendingChanges) {
+            saveJob?.cancel()
+            val c = _config.value ?: return
+            runBlocking { saveWidgetConfigUseCase(c) }
+        }
     }
 
     private fun loadWidgets() {
@@ -97,12 +108,14 @@ class WidgetTabViewModel @Inject constructor(
     }
 
     private fun autoSave() {
+        hasPendingChanges = true
         saveJob?.cancel()
         saveJob = viewModelScope.launch {
             delay(500)
             val wId = _selectedWidgetId.value ?: return@launch
             val c = _config.value ?: return@launch
             saveWidgetConfigUseCase(c)
+            hasPendingChanges = false
             WidgetUpdateHelper.update(appContext, wId)
             _widgets.value = getAllWidgetConfigsUseCase()
         }
