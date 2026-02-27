@@ -48,6 +48,8 @@
     <string name="category_list_add">Add category</string>
     <string name="category_settings_name">Name</string>
     <string name="category_settings_show_checkbox">Show checkbox instead of bullet</string>
+    <string name="category_settings_bullet_label">Bullet point</string>
+    <string name="category_settings_checkbox_label">Checkbox</string>
     <string name="category_settings_tasks_time_first">Tasks with time first</string>
     <string name="category_settings_auto_sort_timed">Auto-sort timed entries</string>
     <string name="info_cat_auto_sort_timed">Automatically group entries with a scheduled time together</string>
@@ -165,8 +167,11 @@
     <string name="widget_delete_preset_message">This will delete this widget preset and its category assignments. Widget instances on the home screen using this preset will be reassigned to another one.</string>
     <string name="widget_delete_confirm">Delete</string>
     <string name="widget_delete_cancel">Cancel</string>
-    <string name="widget_settings_buttons_at_bottom">Place buttons below entries</string>
+    <string name="widget_settings_buttons_scrollable">Buttons scrollable under entries</string>
+    <string name="widget_settings_buttons_visible">Buttons always visible</string>
     <string name="info_widget_buttons_at_bottom">When enabled, Open App and Reorder buttons are placed below all entries (scrollable). Otherwise they float at the bottom of the widget.</string>
+    <string name="widget_settings_collapsible_categories">Collapsible categories</string>
+    <string name="info_widget_collapsible_categories">When enabled, each category on the widget will have a collapse/expand arrow to show or hide its entries.</string>
 
     <string name="info_cat_color">Color used for the category header and its task bullets</string>
     <string name="info_cat_checkbox">Display checkboxes instead of bullet dots for tasks in this category</string>
@@ -231,4 +236,15 @@
     <string name="settings_palette_entry">Entry colors</string>
     <string name="settings_palette_widget_bg">Widget background colors</string>
     <string name="settings_palette_widget_text">Widget text colors</string>
+
+    <string name="section_widget_general">General</string>
+    <string name="section_widget_categories">Categories</string>
+    <string name="section_widget_colors">Colors</string>
+    <string name="section_widget_sizes">Sizes</string>
+    <string name="section_widget_layout">Layout</string>
+    <string name="section_cat_general">General</string>
+    <string name="section_cat_display">Display options</string>
+    <string name="section_cat_calendar">Calendar sync</string>
+    <string name="section_cat_notifications">Notifications</string>
+    <string name="section_cat_routines">Routines</string>
 </resources>

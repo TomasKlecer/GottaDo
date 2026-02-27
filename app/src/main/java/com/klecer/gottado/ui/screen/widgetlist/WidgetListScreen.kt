@@ -1,14 +1,16 @@
 package com.klecer.gottado.ui.screen.widgetlist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +22,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.ViewModule
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,18 +38,19 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,11 +62,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.klecer.gottado.R
-import com.klecer.gottado.data.db.entity.ReorderHandlePosition
 import com.klecer.gottado.ui.color.ColorPrefs
 import com.klecer.gottado.ui.screen.widgetsettings.WidgetTabViewModel
 import kotlinx.coroutines.launch
@@ -171,11 +185,9 @@ fun WidgetListScreen(
 
         if (config == null) return
 
-        val assignedIds = categoryJoins.map { it.join.categoryId }.toSet()
-        val availableToAdd = allCategories.filter { it.id !in assignedIds }
-
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
+        // ── Top section (no collapsible) ──
         OutlinedTextField(
             value = config!!.title ?: "",
             onValueChange = viewModel::updateTitle,
@@ -207,6 +219,9 @@ fun WidgetListScreen(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
         )
 
+        val assignedIds = categoryJoins.map { it.join.categoryId }.toSet()
+        val availableToAdd = allCategories.filter { it.id !in assignedIds }
+
         LabelWithInfo(
             stringResource(R.string.widget_settings_categories),
             stringResource(R.string.info_widget_categories),
@@ -218,11 +233,20 @@ fun WidgetListScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = item.join.visible,
-                        onCheckedChange = { viewModel.setCategoryVisible(item.join.categoryId, it) }
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                    IconButton(
+                        onClick = { viewModel.setCategoryVisible(item.join.categoryId, !item.join.visible) },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            if (item.join.visible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            contentDescription = null,
+                            tint = if (item.join.visible) MaterialTheme.colorScheme.primary
+                                   else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(Modifier.width(4.dp))
                     Text(item.categoryName)
                 }
                 Row {
@@ -248,70 +272,132 @@ fun WidgetListScreen(
             }
         }
 
+        Spacer(Modifier.height(8.dp))
+
+        // ── Colors ──
         val bgColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_WIDGET_BG)
         val textColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_WIDGET_TEXT)
 
-        LabelWithInfo(stringResource(R.string.widget_settings_bg_color), stringResource(R.string.info_widget_bg_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(bgColors, config!!.backgroundColor) { viewModel.updateBackgroundColor(it) }
+        CollapsibleSection(stringResource(R.string.section_widget_colors), icon = Icons.Default.Palette) {
+            LabelWithInfo(stringResource(R.string.widget_settings_bg_color), stringResource(R.string.info_widget_bg_color), Modifier.padding(bottom = 8.dp))
+            ColorRow(bgColors, config!!.backgroundColor) { viewModel.updateBackgroundColor(it) }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_background), stringResource(R.string.info_widget_bg_opacity), Modifier.padding(top = 16.dp))
-        SliderRow(config!!.backgroundAlpha, 0f..1f, { viewModel.updateBackgroundAlpha(it) }) { "%.0f%%".format(it * 100) }
+            LabelWithInfo(stringResource(R.string.widget_settings_background), stringResource(R.string.info_widget_bg_opacity), Modifier.padding(top = 16.dp))
+            SliderRow(config!!.backgroundAlpha, 0f..1f, { viewModel.updateBackgroundAlpha(it) }) { "%.0f%%".format(it * 100) }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_title_color), stringResource(R.string.info_widget_title_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(textColors, config!!.titleColor) { viewModel.updateTitleColor(it) }
+            LabelWithInfo(stringResource(R.string.widget_settings_title_color), stringResource(R.string.info_widget_title_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
+            ColorRow(textColors, config!!.titleColor) { viewModel.updateTitleColor(it) }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_subtitle_color), stringResource(R.string.info_widget_subtitle_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(textColors, config!!.subtitleColor) { viewModel.updateSubtitleColor(it) }
+            LabelWithInfo(stringResource(R.string.widget_settings_subtitle_color), stringResource(R.string.info_widget_subtitle_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
+            ColorRow(textColors, config!!.subtitleColor) { viewModel.updateSubtitleColor(it) }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_default_text_color), stringResource(R.string.info_widget_default_text_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(textColors, config!!.defaultTextColor) { viewModel.updateDefaultTextColor(it) }
+            LabelWithInfo(stringResource(R.string.widget_settings_default_text_color), stringResource(R.string.info_widget_default_text_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
+            ColorRow(textColors, config!!.defaultTextColor) { viewModel.updateDefaultTextColor(it) }
+        }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_bullet_size), stringResource(R.string.info_widget_bullet_size), Modifier.padding(top = 16.dp))
-        SliderRow(config!!.bulletSizeDp.toFloat(), 4f..24f, { viewModel.updateBulletSizeDp(it.toInt()) }) { "${it.toInt()}dp" }
+        // ── Sizes ──
+        CollapsibleSection(stringResource(R.string.section_widget_sizes), icon = Icons.Default.FormatSize) {
+            LabelWithInfo(stringResource(R.string.widget_settings_bullet_size), stringResource(R.string.info_widget_bullet_size))
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                BulletPreview(sizeDp = config!!.bulletSizeDp)
+                Spacer(Modifier.width(8.dp))
+                Slider(
+                    value = config!!.bulletSizeDp.toFloat(),
+                    onValueChange = { viewModel.updateBulletSizeDp(it.toInt()) },
+                    valueRange = 4f..24f,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("${config!!.bulletSizeDp}dp", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(36.dp), textAlign = TextAlign.End)
+            }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_checkbox_size), stringResource(R.string.info_widget_checkbox_size), Modifier.padding(top = 8.dp))
-        SliderRow(config!!.checkboxSizeDp.toFloat(), 4f..24f, { viewModel.updateCheckboxSizeDp(it.toInt()) }) { "${it.toInt()}dp" }
+            Spacer(Modifier.height(8.dp))
+            LabelWithInfo(stringResource(R.string.widget_settings_checkbox_size), stringResource(R.string.info_widget_checkbox_size))
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                CheckboxPreview(sizeDp = config!!.checkboxSizeDp)
+                Spacer(Modifier.width(8.dp))
+                Slider(
+                    value = config!!.checkboxSizeDp.toFloat(),
+                    onValueChange = { viewModel.updateCheckboxSizeDp(it.toInt()) },
+                    valueRange = 4f..24f,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("${config!!.checkboxSizeDp}dp", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(36.dp), textAlign = TextAlign.End)
+            }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_category_font_size), stringResource(R.string.info_widget_cat_font_size), Modifier.padding(top = 8.dp))
-        Slider(value = config!!.categoryFontSizeSp, onValueChange = viewModel::updateCategoryFontSizeSp, valueRange = 8f..32f, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(8.dp))
+            LabelWithInfo(stringResource(R.string.widget_settings_category_font_size), stringResource(R.string.info_widget_cat_font_size))
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text("Aa", fontSize = config!!.categoryFontSizeSp.sp, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.width(36.dp))
+                Spacer(Modifier.width(8.dp))
+                Slider(
+                    value = config!!.categoryFontSizeSp,
+                    onValueChange = viewModel::updateCategoryFontSizeSp,
+                    valueRange = 8f..32f,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("${config!!.categoryFontSizeSp.toInt()}sp", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(36.dp), textAlign = TextAlign.End)
+            }
 
-        LabelWithInfo(stringResource(R.string.widget_settings_record_font_size), stringResource(R.string.info_widget_record_font_size), Modifier.padding(top = 8.dp))
-        Slider(value = config!!.recordFontSizeSp, onValueChange = viewModel::updateRecordFontSizeSp, valueRange = 8f..32f, modifier = Modifier.fillMaxWidth())
-
-        LabelWithInfo(stringResource(R.string.widget_settings_reorder_handle), stringResource(R.string.info_widget_reorder_handle), Modifier.padding(top = 16.dp))
-        var reorderExpanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(expanded = reorderExpanded, onExpandedChange = { reorderExpanded = it }) {
-            OutlinedTextField(
-                value = config!!.reorderHandlePosition.name,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.widget_settings_reorder_handle)) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = reorderExpanded) },
-                modifier = Modifier.fillMaxWidth().menuAnchor()
-            )
-            ExposedDropdownMenu(expanded = reorderExpanded, onDismissRequest = { reorderExpanded = false }) {
-                ReorderHandlePosition.entries.forEach { pos ->
-                    DropdownMenuItem(
-                        text = { Text(pos.name) },
-                        onClick = { viewModel.updateReorderHandlePosition(pos); reorderExpanded = false }
-                    )
-                }
+            Spacer(Modifier.height(8.dp))
+            LabelWithInfo(stringResource(R.string.widget_settings_record_font_size), stringResource(R.string.info_widget_record_font_size))
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text("Aa", fontSize = config!!.recordFontSizeSp.sp, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.width(36.dp))
+                Spacer(Modifier.width(8.dp))
+                Slider(
+                    value = config!!.recordFontSizeSp,
+                    onValueChange = viewModel::updateRecordFontSizeSp,
+                    valueRange = 8f..32f,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("${config!!.recordFontSizeSp.toInt()}sp", style = MaterialTheme.typography.bodySmall, modifier = Modifier.width(36.dp), textAlign = TextAlign.End)
             }
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 12.dp)
-        ) {
-            Checkbox(
-                checked = config!!.buttonsAtBottom,
-                onCheckedChange = { viewModel.updateButtonsAtBottom(it) }
-            )
-            Text(stringResource(R.string.widget_settings_buttons_at_bottom))
-            Spacer(Modifier.width(4.dp))
-            InfoIcon(stringResource(R.string.info_widget_buttons_at_bottom))
+        // ── Layout ──
+        CollapsibleSection(stringResource(R.string.section_widget_layout), icon = Icons.Default.ViewModule) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Text(
+                    stringResource(R.string.widget_settings_buttons_visible),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (!config!!.buttonsAtBottom) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.width(8.dp))
+                Switch(
+                    checked = config!!.buttonsAtBottom,
+                    onCheckedChange = { viewModel.updateButtonsAtBottom(it) }
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    stringResource(R.string.widget_settings_buttons_scrollable),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (config!!.buttonsAtBottom) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.width(4.dp))
+                InfoIcon(stringResource(R.string.info_widget_buttons_at_bottom))
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 4.dp)
+            ) {
+                Checkbox(
+                    checked = config!!.collapsibleCategories,
+                    onCheckedChange = { viewModel.updateCollapsibleCategories(it) }
+                )
+                Text(stringResource(R.string.widget_settings_collapsible_categories), style = MaterialTheme.typography.bodyLarge)
+                Spacer(Modifier.width(4.dp))
+                InfoIcon(stringResource(R.string.info_widget_collapsible_categories))
+            }
         }
 
+        // ── Delete ──
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             onClick = { showDeleteDialog = true },
@@ -320,6 +406,72 @@ fun WidgetListScreen(
         ) {
             Text(stringResource(R.string.widget_delete_preset))
         }
+    }
+}
+
+// ── Shared composables ──
+
+@Composable
+private fun CollapsibleSection(
+    title: String,
+    icon: ImageVector? = null,
+    defaultExpanded: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    var expanded by remember { mutableStateOf(defaultExpanded) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (icon != null) {
+            Icon(
+                icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.width(8.dp))
+        }
+        Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+        Icon(
+            if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+    HorizontalDivider()
+    AnimatedVisibility(visible = expanded) {
+        Column(modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun BulletPreview(sizeDp: Int) {
+    val color = MaterialTheme.colorScheme.onSurface
+    Canvas(modifier = Modifier.size(24.dp)) {
+        val r = (sizeDp / 2f).dp.toPx()
+        drawCircle(color, radius = r, center = Offset(size.width / 2, size.height / 2))
+    }
+}
+
+@Composable
+private fun CheckboxPreview(sizeDp: Int) {
+    val color = MaterialTheme.colorScheme.onSurface
+    Canvas(modifier = Modifier.size(24.dp)) {
+        val s = (sizeDp * 0.65f).dp.toPx()
+        val left = (size.width - s) / 2
+        val top = (size.height - s) / 2
+        drawRect(
+            color,
+            topLeft = Offset(left, top),
+            size = androidx.compose.ui.geometry.Size(s, s),
+            style = Stroke(width = 1.5f.dp.toPx())
+        )
     }
 }
 

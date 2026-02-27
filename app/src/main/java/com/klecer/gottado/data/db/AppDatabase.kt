@@ -37,7 +37,7 @@ import com.klecer.gottado.data.db.dao.WidgetInstanceDao
         WidgetInstanceEntity::class,
         CalendarSyncRuleEntity::class
     ],
-    version = 14,
+    version = 15,
     exportSchema = true
 )
 @TypeConverters(AppConverters::class)
@@ -150,6 +150,12 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE category ADD COLUMN autoSortTimedEntries INTEGER NOT NULL DEFAULT 1")
                 db.execSQL("ALTER TABLE category ADD COLUMN timedEntriesAscending INTEGER NOT NULL DEFAULT 1")
+            }
+        }
+
+        val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE widget_config ADD COLUMN collapsibleCategories INTEGER NOT NULL DEFAULT 0")
             }
         }
     }

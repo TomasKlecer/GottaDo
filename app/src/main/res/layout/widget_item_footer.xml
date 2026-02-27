@@ -9,22 +9,22 @@
     android:paddingBottom="6dp">
 
     <ImageView
-        android:id="@+id/widget_footer_open_app"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_weight="1"
-        android:padding="8dp"
-        android:src="@drawable/ic_settings_widget"
-        android:scaleType="fitCenter"
-        android:contentDescription="@null" />
-
-    <ImageView
         android:id="@+id/widget_footer_picker"
         android:layout_width="0dp"
         android:layout_height="36dp"
         android:layout_weight="1"
         android:padding="8dp"
         android:src="@drawable/ic_widget_picker"
+        android:scaleType="fitCenter"
+        android:contentDescription="@null" />
+
+    <ImageView
+        android:id="@+id/widget_footer_open_app"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:src="@drawable/ic_settings_widget"
         android:scaleType="fitCenter"
         android:contentDescription="@null" />
 

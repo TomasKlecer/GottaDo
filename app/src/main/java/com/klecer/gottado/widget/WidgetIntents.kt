@@ -18,6 +18,7 @@ object WidgetIntents {
     const val ACTION_MOVE_TASK_UP = "com.klecer.gottado.widget.ACTION_MOVE_TASK_UP"
     const val ACTION_MOVE_TASK_DOWN = "com.klecer.gottado.widget.ACTION_MOVE_TASK_DOWN"
     const val ACTION_PICK_PRESET = "com.klecer.gottado.widget.ACTION_PICK_PRESET"
+    const val ACTION_TOGGLE_COLLAPSE = "com.klecer.gottado.widget.ACTION_TOGGLE_COLLAPSE"
     const val ACTION_LIST_CLICK = "com.klecer.gottado.widget.ACTION_LIST_CLICK"
 
     const val EXTRA_WIDGET_ID = "widgetId"
@@ -79,7 +80,7 @@ object WidgetIntents {
         val intent = Intent(context, ReorderOverlayActivity::class.java).apply {
             action = ACTION_OPEN_REORDER
             putExtra(EXTRA_WIDGET_ID, widgetId)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY
         }
         return PendingIntent.getActivity(context, requestCode, intent, immutableFlags())
     }
@@ -95,7 +96,7 @@ object WidgetIntents {
     fun openPresetPickerPendingIntent(context: Context, appWidgetId: Int, requestCode: Int): PendingIntent {
         val intent = Intent(context, WidgetPresetPickerActivity::class.java).apply {
             putExtra(EXTRA_WIDGET_ID, appWidgetId)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY
         }
         return PendingIntent.getActivity(context, requestCode, intent, immutableFlags())
     }

@@ -1,14 +1,15 @@
 package com.klecer.gottado.ui.screen.categorylist
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,29 +20,36 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Switch
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,22 +59,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.compose.ui.draw.alpha
 import com.klecer.gottado.R
 import com.klecer.gottado.data.db.entity.CalendarSyncRuleType
-import com.klecer.gottado.ui.color.ColorPrefs
 import com.klecer.gottado.data.db.entity.RoutineEntity
 import com.klecer.gottado.data.db.entity.RoutineFrequency
+import com.klecer.gottado.ui.color.ColorPrefs
 import com.klecer.gottado.ui.screen.categorysettings.CategoryTabViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -223,6 +231,7 @@ fun CategoryListScreen(
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
+        // ── Top section (no collapsible): name, bullet/checkbox switch, color ──
         OutlinedTextField(
             value = category!!.name,
             onValueChange = viewModel::updateName,
@@ -230,12 +239,37 @@ fun CategoryListScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        val categoryColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_CATEGORY)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+        ) {
+            Text(
+                stringResource(R.string.category_settings_bullet_label),
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (!category!!.showCheckboxInsteadOfBullet) MaterialTheme.colorScheme.primary
+                       else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.width(8.dp))
+            Switch(
+                checked = category!!.showCheckboxInsteadOfBullet,
+                onCheckedChange = viewModel::updateShowCheckboxInsteadOfBullet
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                stringResource(R.string.category_settings_checkbox_label),
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (category!!.showCheckboxInsteadOfBullet) MaterialTheme.colorScheme.primary
+                       else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.width(4.dp))
+            InfoIcon(stringResource(R.string.info_cat_checkbox))
+        }
 
+        val categoryColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_CATEGORY)
         LabelWithInfo(
             stringResource(R.string.category_settings_color),
             stringResource(R.string.info_cat_color),
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
         )
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
             categoryColors.forEach { color ->
@@ -255,211 +289,210 @@ fun CategoryListScreen(
             }
         }
 
-        CheckboxWithInfo(
-            checked = category!!.showCheckboxInsteadOfBullet,
-            onCheckedChange = viewModel::updateShowCheckboxInsteadOfBullet,
-            label = stringResource(R.string.category_settings_show_checkbox),
-            info = stringResource(R.string.info_cat_checkbox)
-        )
-        CheckboxWithInfo(
-            checked = category!!.autoSortTimedEntries,
-            onCheckedChange = viewModel::updateAutoSortTimedEntries,
-            label = stringResource(R.string.category_settings_auto_sort_timed),
-            info = stringResource(R.string.info_cat_auto_sort_timed)
-        )
-        if (category!!.autoSortTimedEntries) {
-            SwitchWithInfo(
-                checked = category!!.tasksWithTimeFirst,
-                onCheckedChange = viewModel::updateTasksWithTimeFirst,
-                labelOn = stringResource(R.string.category_settings_timed_position_top),
-                labelOff = stringResource(R.string.category_settings_timed_position_bottom),
-                info = stringResource(R.string.info_cat_timed_position)
-            )
-            SwitchWithInfo(
-                checked = category!!.timedEntriesAscending,
-                onCheckedChange = viewModel::updateTimedEntriesAscending,
-                labelOn = stringResource(R.string.category_settings_timed_order_asc),
-                labelOff = stringResource(R.string.category_settings_timed_order_desc),
-                info = stringResource(R.string.info_cat_timed_order)
-            )
-        }
-        CheckboxWithInfo(
-            checked = category!!.showCalendarIcon,
-            onCheckedChange = viewModel::updateShowCalendarIcon,
-            label = stringResource(R.string.category_settings_show_calendar_icon),
-            info = stringResource(R.string.info_cat_show_calendar_icon)
-        )
-        CheckboxWithInfo(
-            checked = category!!.showDeleteButton,
-            onCheckedChange = viewModel::updateShowDeleteButton,
-            label = stringResource(R.string.category_settings_show_delete_button),
-            info = stringResource(R.string.info_cat_show_delete_button)
-        )
-
-        val calendarSyncEnabled = viewModel.syncPrefs.enabled
-        val notificationsEnabled = viewModel.syncPrefs.notificationsEnabled
-
-        DisabledSectionWrapper(
-            enabled = calendarSyncEnabled,
-            disabledTooltip = stringResource(R.string.disabled_calendar_sync_tooltip)
-        ) {
-            LabelWithInfo(
-                stringResource(R.string.calendar_sync_rules_label),
-                stringResource(R.string.info_cat_sync_rules),
-                modifier = Modifier.padding(top = 12.dp)
-            )
-
-            val existingRuleTypes = syncRules.map { it.ruleType }.toSet()
-            val availableRules = SYNC_RULE_TYPES.filter { it.first !in existingRuleTypes }
-
-            var rulesExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = if (calendarSyncEnabled) rulesExpanded else false,
-                onExpandedChange = { if (calendarSyncEnabled) rulesExpanded = it }
-            ) {
-                OutlinedTextField(
-                    value = stringResource(R.string.calendar_sync_rules_add),
-                    onValueChange = {},
-                    readOnly = true,
-                    enabled = calendarSyncEnabled,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rulesExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
-                )
-                ExposedDropdownMenu(expanded = rulesExpanded, onDismissRequest = { rulesExpanded = false }) {
-                    availableRules.forEach { (type, labelRes) ->
-                        DropdownMenuItem(
-                            text = { Text(stringResource(labelRes)) },
-                            onClick = {
-                                viewModel.addSyncRule(type)
-                                rulesExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            syncRules.forEach { rule ->
-                val labelRes = SYNC_RULE_TYPES.find { it.first == rule.ruleType }?.second
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = if (labelRes != null) stringResource(labelRes) else rule.ruleType,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f).padding(start = 8.dp)
-                    )
-                    IconButton(
-                        onClick = { if (calendarSyncEnabled) viewModel.removeSyncRule(rule.id) },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Text("✕", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
-                    }
-                }
-            }
-        }
-
-        DisabledSectionWrapper(
-            enabled = notificationsEnabled,
-            disabledTooltip = stringResource(R.string.disabled_notifications_tooltip)
-        ) {
-            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
-
+        // ── Display options ──
+        CollapsibleSection(stringResource(R.string.section_cat_display), icon = Icons.Default.Tune) {
             CheckboxWithInfo(
-                checked = category!!.notifyOnTime,
-                onCheckedChange = { if (notificationsEnabled) viewModel.updateNotifyOnTime(it) },
-                label = stringResource(R.string.category_settings_notify_on_time),
-                info = stringResource(R.string.info_cat_notify_on_time)
+                checked = category!!.autoSortTimedEntries,
+                onCheckedChange = viewModel::updateAutoSortTimedEntries,
+                label = stringResource(R.string.category_settings_auto_sort_timed),
+                info = stringResource(R.string.info_cat_auto_sort_timed)
             )
+            if (category!!.autoSortTimedEntries) {
+                SwitchWithInfo(
+                    checked = category!!.tasksWithTimeFirst,
+                    onCheckedChange = viewModel::updateTasksWithTimeFirst,
+                    labelOn = stringResource(R.string.category_settings_timed_position_top),
+                    labelOff = stringResource(R.string.category_settings_timed_position_bottom),
+                    info = stringResource(R.string.info_cat_timed_position)
+                )
+                SwitchWithInfo(
+                    checked = category!!.timedEntriesAscending,
+                    onCheckedChange = viewModel::updateTimedEntriesAscending,
+                    labelOn = stringResource(R.string.category_settings_timed_order_asc),
+                    labelOff = stringResource(R.string.category_settings_timed_order_desc),
+                    info = stringResource(R.string.info_cat_timed_order)
+                )
+            }
+            CheckboxWithInfo(
+                checked = category!!.showCalendarIcon,
+                onCheckedChange = viewModel::updateShowCalendarIcon,
+                label = stringResource(R.string.category_settings_show_calendar_icon),
+                info = stringResource(R.string.info_cat_show_calendar_icon)
+            )
+            CheckboxWithInfo(
+                checked = category!!.showDeleteButton,
+                onCheckedChange = viewModel::updateShowDeleteButton,
+                label = stringResource(R.string.category_settings_show_delete_button),
+                info = stringResource(R.string.info_cat_show_delete_button)
+            )
+        }
 
-            if (category!!.notifyOnTime && notificationsEnabled) {
+        // ── Calendar sync ──
+        val calendarSyncEnabled = viewModel.syncPrefs.enabled
+
+        CollapsibleSection(stringResource(R.string.section_cat_calendar), icon = Icons.Default.DateRange) {
+            DisabledSectionWrapper(
+                enabled = calendarSyncEnabled,
+                disabledTooltip = stringResource(R.string.disabled_calendar_sync_tooltip)
+            ) {
                 LabelWithInfo(
-                    stringResource(R.string.category_settings_notify_minutes_before),
-                    stringResource(R.string.info_cat_notify_minutes_before),
-                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                    stringResource(R.string.calendar_sync_rules_label),
+                    stringResource(R.string.info_cat_sync_rules)
                 )
 
-                var minutesExpanded by remember { mutableStateOf(false) }
-                val currentLabel = NOTIFY_MINUTES_OPTIONS.find { it.first == category!!.notifyMinutesBefore }?.second
-                    ?: R.string.notify_15_min
+                val existingRuleTypes = syncRules.map { it.ruleType }.toSet()
+                val availableRules = SYNC_RULE_TYPES.filter { it.first !in existingRuleTypes }
 
+                var rulesExpanded by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(
-                    expanded = minutesExpanded,
-                    onExpandedChange = { minutesExpanded = it }
+                    expanded = if (calendarSyncEnabled) rulesExpanded else false,
+                    onExpandedChange = { if (calendarSyncEnabled) rulesExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = stringResource(currentLabel),
+                        value = stringResource(R.string.calendar_sync_rules_add),
                         onValueChange = {},
                         readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = minutesExpanded) },
+                        enabled = calendarSyncEnabled,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rulesExpanded) },
                         modifier = Modifier.fillMaxWidth().menuAnchor()
                     )
-                    ExposedDropdownMenu(
-                        expanded = minutesExpanded,
-                        onDismissRequest = { minutesExpanded = false }
-                    ) {
-                        NOTIFY_MINUTES_OPTIONS.forEach { (minutes, labelRes) ->
+                    ExposedDropdownMenu(expanded = rulesExpanded, onDismissRequest = { rulesExpanded = false }) {
+                        availableRules.forEach { (type, labelRes) ->
                             DropdownMenuItem(
                                 text = { Text(stringResource(labelRes)) },
                                 onClick = {
-                                    viewModel.updateNotifyMinutesBefore(minutes)
-                                    minutesExpanded = false
+                                    viewModel.addSyncRule(type)
+                                    rulesExpanded = false
                                 }
                             )
                         }
                     }
                 }
-            }
-        }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-
-        LabelWithInfo(
-            stringResource(R.string.category_settings_manage_routines),
-            stringResource(R.string.info_cat_routines)
-        )
-
-        routines.forEach { routine ->
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        if (!routine.name.isNullOrBlank()) {
-                            Text(routine.name, style = MaterialTheme.typography.bodyLarge)
-                        }
+                syncRules.forEach { rule ->
+                    val labelRes = SYNC_RULE_TYPES.find { it.first == rule.ruleType }?.second
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         Text(
-                            routineSummary(routine),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = if (labelRes != null) stringResource(labelRes) else rule.ruleType,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f).padding(start = 8.dp)
                         )
-                    }
-                    Row {
-                        TextButton(onClick = { selectedId?.let { catId -> onEditRoutine(catId, routine.id) } }) {
-                            Text(stringResource(R.string.routine_edit))
-                        }
-                        TextButton(onClick = { viewModel.deleteRoutine(routine.id) }) {
-                            Text(stringResource(R.string.routine_delete))
+                        IconButton(
+                            onClick = { if (calendarSyncEnabled) viewModel.removeSyncRule(rule.id) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Text("✕", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
                         }
                     }
                 }
             }
         }
 
-        Button(
-            onClick = { selectedId?.let { onAddRoutine(it) } },
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            Text(stringResource(R.string.routine_add))
+        // ── Notifications ──
+        val notificationsEnabled = viewModel.syncPrefs.notificationsEnabled
+
+        CollapsibleSection(stringResource(R.string.section_cat_notifications), icon = Icons.Default.Notifications) {
+            DisabledSectionWrapper(
+                enabled = notificationsEnabled,
+                disabledTooltip = stringResource(R.string.disabled_notifications_tooltip)
+            ) {
+                CheckboxWithInfo(
+                    checked = category!!.notifyOnTime,
+                    onCheckedChange = { if (notificationsEnabled) viewModel.updateNotifyOnTime(it) },
+                    label = stringResource(R.string.category_settings_notify_on_time),
+                    info = stringResource(R.string.info_cat_notify_on_time)
+                )
+
+                if (category!!.notifyOnTime && notificationsEnabled) {
+                    LabelWithInfo(
+                        stringResource(R.string.category_settings_notify_minutes_before),
+                        stringResource(R.string.info_cat_notify_minutes_before),
+                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                    )
+
+                    var minutesExpanded by remember { mutableStateOf(false) }
+                    val currentLabel = NOTIFY_MINUTES_OPTIONS.find { it.first == category!!.notifyMinutesBefore }?.second
+                        ?: R.string.notify_15_min
+
+                    ExposedDropdownMenuBox(
+                        expanded = minutesExpanded,
+                        onExpandedChange = { minutesExpanded = it }
+                    ) {
+                        OutlinedTextField(
+                            value = stringResource(currentLabel),
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = minutesExpanded) },
+                            modifier = Modifier.fillMaxWidth().menuAnchor()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = minutesExpanded,
+                            onDismissRequest = { minutesExpanded = false }
+                        ) {
+                            NOTIFY_MINUTES_OPTIONS.forEach { (minutes, labelRes) ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(labelRes)) },
+                                    onClick = {
+                                        viewModel.updateNotifyMinutesBefore(minutes)
+                                        minutesExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Routines ──
+        CollapsibleSection(stringResource(R.string.section_cat_routines), icon = Icons.Default.Repeat) {
+            routines.forEach { routine ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            if (!routine.name.isNullOrBlank()) {
+                                Text(routine.name, style = MaterialTheme.typography.bodyLarge)
+                            }
+                            Text(
+                                routineSummary(routine),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Row {
+                            TextButton(onClick = { selectedId?.let { catId -> onEditRoutine(catId, routine.id) } }) {
+                                Text(stringResource(R.string.routine_edit))
+                            }
+                            TextButton(onClick = { viewModel.deleteRoutine(routine.id) }) {
+                                Text(stringResource(R.string.routine_delete))
+                            }
+                        }
+                    }
+                }
+            }
+
+            Button(
+                onClick = { selectedId?.let { onAddRoutine(it) } },
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(stringResource(R.string.routine_add))
+            }
         }
     }
 }
+
+// ── Helper composables ──
 
 private fun routineSummary(r: RoutineEntity): String {
     val time = "%02d:%02d".format(r.scheduleTimeHour, r.scheduleTimeMinute)
@@ -483,6 +516,45 @@ private fun routineSummary(r: RoutineEntity): String {
                 else -> "?"
             }
         } ?: ""} at $time"
+    }
+}
+
+@Composable
+private fun CollapsibleSection(
+    title: String,
+    icon: ImageVector? = null,
+    defaultExpanded: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    var expanded by remember { mutableStateOf(defaultExpanded) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (icon != null) {
+            Icon(
+                icon,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.width(8.dp))
+        }
+        Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+        Icon(
+            if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+    HorizontalDivider()
+    AnimatedVisibility(visible = expanded) {
+        Column(modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)) {
+            content()
+        }
     }
 }
 

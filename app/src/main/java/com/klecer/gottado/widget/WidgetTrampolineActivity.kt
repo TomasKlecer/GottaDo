@@ -60,6 +60,7 @@ class WidgetTrampolineActivity : Activity() {
                     startActivity(Intent(this, ReorderOverlayActivity::class.java).apply {
                         this.action = WidgetIntents.ACTION_OPEN_REORDER
                         putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
                     })
                 }
             }
@@ -97,7 +98,15 @@ class WidgetTrampolineActivity : Activity() {
                 if (widgetId != -1) {
                     startActivity(Intent(this, WidgetPresetPickerActivity::class.java).apply {
                         putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
                     })
+                }
+            }
+            WidgetIntents.ACTION_TOGGLE_COLLAPSE -> {
+                val categoryId = intent.getLongExtra(WidgetIntents.EXTRA_CATEGORY_ID, -1L)
+                if (widgetId != -1 && categoryId != -1L) {
+                    WidgetCollapseHelper.toggle(applicationContext, widgetId, categoryId)
+                    WidgetUpdateHelper.update(applicationContext, widgetId)
                 }
             }
             "OPEN_APP" -> {

@@ -247,6 +247,11 @@ class WidgetTabViewModel @Inject constructor(
         autoSave()
     }
 
+    fun updateCollapsibleCategories(enabled: Boolean) {
+        _config.value = _config.value?.copy(collapsibleCategories = enabled)
+        autoSave()
+    }
+
     fun setCategoryVisible(categoryId: Long, visible: Boolean) {
         val wId = _selectedWidgetId.value ?: return
         viewModelScope.launch {

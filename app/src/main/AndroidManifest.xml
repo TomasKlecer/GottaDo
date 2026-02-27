@@ -66,11 +66,15 @@
         <activity
             android:name=".widget.ReorderOverlayActivity"
             android:exported="false"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
             android:theme="@style/Theme.GottaDo.Translucent" />
 
         <activity
             android:name=".widget.WidgetPresetPickerActivity"
             android:exported="false"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
             android:theme="@style/Theme.GottaDo.Translucent" />
 
         <activity

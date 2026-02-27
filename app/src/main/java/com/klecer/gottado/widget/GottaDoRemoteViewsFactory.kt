@@ -68,10 +68,14 @@ class GottaDoRemoteViewsFactory(
             list.add(WidgetListItem.HintText(context.getString(R.string.widget_hint_no_categories)))
             return list
         }
+        val collapsible = state.config.collapsibleCategories
         for (block in state.categoryBlocks) {
-            list.add(WidgetListItem.CategoryRow(block))
-            for (task in block.tasks) {
-                list.add(WidgetListItem.RecordRow(task, block.showCheckboxInsteadOfBullet, block.showCalendarIcon, block.showDeleteButton))
+            val collapsed = collapsible && WidgetCollapseHelper.isCollapsed(context, widgetId, block.categoryId)
+            list.add(WidgetListItem.CategoryRow(block, collapsed = collapsed, collapsible = collapsible))
+            if (!collapsed) {
+                for (task in block.tasks) {
+                    list.add(WidgetListItem.RecordRow(task, block.showCheckboxInsteadOfBullet, block.showCalendarIcon, block.showDeleteButton))
+                }
             }
         }
         if (state.config.buttonsAtBottom) {
@@ -91,7 +95,7 @@ class GottaDoRemoteViewsFactory(
             val id = widgetId
             return when (val item = items[position]) {
                 is WidgetListItem.CategoryRow -> {
-                    if (config != null) buildCategoryRow(config, item.block, id)
+                    if (config != null) buildCategoryRow(config, item.block, id, item.collapsible, item.collapsed)
                     else RemoteViews(context.packageName, R.layout.widget_item_footer)
                 }
                 is WidgetListItem.RecordRow -> {
@@ -111,7 +115,9 @@ class GottaDoRemoteViewsFactory(
     private fun buildCategoryRow(
         config: com.klecer.gottado.data.db.entity.WidgetConfigEntity,
         block: com.klecer.gottado.domain.model.CategoryBlock,
-        widgetId: Int
+        widgetId: Int,
+        collapsible: Boolean = false,
+        collapsed: Boolean = false
     ): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_item_category)
         rv.setTextViewText(R.id.widget_category_name, block.name)
@@ -119,6 +125,20 @@ class GottaDoRemoteViewsFactory(
         val catColor = if (block.color != 0) block.color else config.defaultTextColor
         rv.setTextColor(R.id.widget_category_name, catColor)
         rv.setTextColor(R.id.widget_category_edit, catColor)
+
+        if (collapsible) {
+            rv.setViewVisibility(R.id.widget_category_collapse, android.view.View.VISIBLE)
+            rv.setTextViewText(R.id.widget_category_collapse, if (collapsed) "▶" else "▼")
+            rv.setTextColor(R.id.widget_category_collapse, catColor)
+            val collapseFillIn = Intent().apply {
+                putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
+                putExtra(WidgetIntents.EXTRA_CATEGORY_ID, block.categoryId)
+                putExtra("action", WidgetIntents.ACTION_TOGGLE_COLLAPSE)
+            }
+            rv.setOnClickFillInIntent(R.id.widget_category_collapse, collapseFillIn)
+        } else {
+            rv.setViewVisibility(R.id.widget_category_collapse, android.view.View.GONE)
+        }
 
         val addFillIn = Intent().apply {
             putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
@@ -292,8 +312,10 @@ class GottaDoRemoteViewsFactory(
         val inset = stroke / 2f
         canvas.drawRoundRect(inset, inset, s - inset, s - inset, stroke * 2, stroke * 2, borderPaint)
         if (checked) {
+            val luminance = (Color.red(color) * 0.299 + Color.green(color) * 0.587 + Color.blue(color) * 0.114)
+            val checkColor = if (luminance > 180) Color.BLACK else Color.WHITE
             val checkPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                this.color = Color.WHITE
+                this.color = checkColor
                 style = Paint.Style.STROKE
                 strokeWidth = stroke * 1.5f
                 strokeCap = Paint.Cap.ROUND
