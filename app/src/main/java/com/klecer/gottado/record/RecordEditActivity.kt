@@ -86,8 +86,12 @@ class RecordEditActivity : ComponentActivity() {
         var widgetTextColor = 0xFF000000.toInt()
         if (widgetId != -1) {
             try {
+                val entryPoint = applicationContext.widgetEntryPoint()
+                val presetId = runBlocking {
+                    entryPoint.getWidgetInstanceDao().getPresetId(widgetId) ?: widgetId
+                }
                 val cfg = runBlocking {
-                    applicationContext.widgetEntryPoint().getWidgetConfigRepository().getByWidgetId(widgetId)
+                    entryPoint.getWidgetConfigRepository().getByWidgetId(presetId)
                 }
                 if (cfg != null) {
                     val a = (cfg.backgroundAlpha * 255).toInt().coerceIn(0, 255)

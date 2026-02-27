@@ -35,19 +35,22 @@ class GottaDoRemoteViewsFactory(
 
     private fun loadState() {
         try {
-            val id = widgetId
-            if (id == -1) {
+            val appId = widgetId
+            if (appId == -1) {
                 Log.w(TAG, "loadState: widgetId == -1")
                 state = null
                 items = emptyList()
                 return
             }
             val entryPoint = context.widgetEntryPoint()
+            val presetId = runBlocking {
+                entryPoint.getWidgetInstanceDao().getPresetId(appId) ?: appId
+            }
             state = runBlocking {
-                entryPoint.getWidgetStateUseCase().invoke(id)
+                entryPoint.getWidgetStateUseCase().invoke(presetId)
             }
             items = state?.let { flatten(it) } ?: emptyList()
-            Log.d(TAG, "loadState: items.size=${items.size}, state=${if (state != null) "loaded" else "null"}")
+            Log.d(TAG, "loadState: items.size=${items.size}, presetId=$presetId, state=${if (state != null) "loaded" else "null"}")
         } catch (e: Throwable) {
             Log.e(TAG, "loadState() crashed", e)
             state = null
@@ -248,12 +251,17 @@ class GottaDoRemoteViewsFactory(
     private fun buildFooter(widgetId: Int): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_item_footer)
         val textColor = state?.config?.defaultTextColor ?: Color.WHITE
-        rv.setTextColor(R.id.widget_footer_open_app, textColor)
         rv.setTextColor(R.id.widget_footer_reorder, textColor)
         val openFillIn = Intent().apply {
             putExtra("action", "OPEN_APP")
+            putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
         }
         rv.setOnClickFillInIntent(R.id.widget_footer_open_app, openFillIn)
+        val pickerFillIn = Intent().apply {
+            putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
+            putExtra("action", WidgetIntents.ACTION_PICK_PRESET)
+        }
+        rv.setOnClickFillInIntent(R.id.widget_footer_picker, pickerFillIn)
         val reorderFillIn = Intent().apply {
             putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
             putExtra("action", WidgetIntents.ACTION_OPEN_REORDER)

@@ -20,8 +20,8 @@ class RoutineWorker @AssistedInject constructor(
         return try {
             val affectedWidgetIds = executeRoutinesDueUseCase()
             if (affectedWidgetIds.isNotEmpty()) {
-                for (widgetId in affectedWidgetIds) {
-                    WidgetUpdateHelper.update(appContext, widgetId)
+                for (presetId in affectedWidgetIds) {
+                    WidgetUpdateHelper.updateAllForPreset(appContext, presetId)
                 }
             }
             Result.success()

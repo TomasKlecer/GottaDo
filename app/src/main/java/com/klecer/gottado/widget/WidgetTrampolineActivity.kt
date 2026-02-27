@@ -64,9 +64,11 @@ class WidgetTrampolineActivity : Activity() {
                 }
             }
             WidgetIntents.ACTION_OPEN_CATEGORY_SETTINGS -> {
+                val categoryId = intent.getLongExtra(WidgetIntents.EXTRA_CATEGORY_ID, 0L)
+                val route = if (categoryId > 0) "category_settings/$categoryId" else "category_list"
                 startActivity(Intent(this, com.klecer.gottado.MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    putExtra("navigate_to", "category_list")
+                    putExtra("navigate_to", route)
                 })
             }
             WidgetIntents.ACTION_DELETE_TASK -> {
@@ -91,13 +93,27 @@ class WidgetTrampolineActivity : Activity() {
                     WidgetUpdateHelper.update(applicationContext, widgetId)
                 }
             }
+            WidgetIntents.ACTION_PICK_PRESET -> {
+                if (widgetId != -1) {
+                    startActivity(Intent(this, WidgetPresetPickerActivity::class.java).apply {
+                        putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)
+                    })
+                }
+            }
             "OPEN_APP" -> {
-                startActivity(Intent(this, com.klecer.gottado.MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    if (widgetId != -1) {
-                        putExtra("navigate_to", "widget_settings/$widgetId")
+                if (widgetId != -1) {
+                    val presetId = runBlocking {
+                        applicationContext.widgetEntryPoint().getWidgetInstanceDao().getPresetId(widgetId) ?: widgetId
                     }
-                })
+                    startActivity(Intent(this, com.klecer.gottado.MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        putExtra("navigate_to", "widget_settings/$presetId")
+                    })
+                } else {
+                    startActivity(Intent(this, com.klecer.gottado.MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    })
+                }
             }
         }
     }

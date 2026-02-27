@@ -41,6 +41,7 @@ class ReorderOverlayActivity : ComponentActivity() {
     lateinit var moveTaskToCategoryUseCase: MoveTaskToCategoryUseCase
 
     private var widgetId: Int = -1
+    private var presetId: Int = -1
     private lateinit var adapter: ReorderAdapter
     private lateinit var touchHelper: ItemTouchHelper
 
@@ -52,6 +53,9 @@ class ReorderOverlayActivity : ComponentActivity() {
         if (widgetId == -1) {
             finish()
             return
+        }
+        presetId = runBlocking {
+            applicationContext.widgetEntryPoint().getWidgetInstanceDao().getPresetId(widgetId) ?: widgetId
         }
 
         findViewById<View>(R.id.reorder_root).setOnClickListener { finish() }
@@ -113,7 +117,7 @@ class ReorderOverlayActivity : ComponentActivity() {
     private fun applyWidgetBackground() {
         try {
             val cfg = runBlocking {
-                applicationContext.widgetEntryPoint().getWidgetConfigRepository().getByWidgetId(widgetId)
+                applicationContext.widgetEntryPoint().getWidgetConfigRepository().getByWidgetId(presetId)
             }
             if (cfg != null) {
                 val bgColor = 0xFF000000.toInt() or (cfg.backgroundColor and 0x00FFFFFF)
@@ -128,7 +132,7 @@ class ReorderOverlayActivity : ComponentActivity() {
 
     private fun loadState() {
         lifecycleScope.launch {
-            val state = getWidgetStateUseCase(widgetId) ?: run {
+            val state = getWidgetStateUseCase(presetId) ?: run {
                 finish()
                 return@launch
             }

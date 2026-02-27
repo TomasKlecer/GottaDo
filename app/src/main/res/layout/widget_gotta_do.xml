@@ -75,15 +75,23 @@
             android:orientation="horizontal"
             android:gravity="center">
 
-            <TextView
+            <ImageView
                 android:id="@+id/widget_btn_open_app"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:padding="8dp"
-                android:text="@string/widget_open_app"
-                android:textSize="13sp"
-                android:gravity="center" />
+                android:src="@drawable/ic_settings_widget"
+                android:scaleType="fitCenter"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/widget_btn_picker"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_widget_picker"
+                android:scaleType="fitCenter"
+                android:contentDescription="@null" />
 
             <TextView
                 android:id="@+id/widget_btn_reorder"

@@ -4,16 +4,18 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.klecer.gottado.data.db.dao.WidgetInstanceDao
 import com.klecer.gottado.data.db.entity.CategoryEntity
 import com.klecer.gottado.data.db.entity.ReorderHandlePosition
-import com.klecer.gottado.data.db.entity.WidgetCategoryJoinEntity
 import com.klecer.gottado.data.db.entity.WidgetConfigEntity
 import com.klecer.gottado.domain.repository.WidgetCategoryRepository
+import com.klecer.gottado.domain.repository.WidgetConfigRepository
 import com.klecer.gottado.domain.usecase.GetAllWidgetConfigsUseCase
 import com.klecer.gottado.domain.usecase.GetCategoriesUseCase
 import com.klecer.gottado.domain.usecase.GetWidgetConfigUseCase
 import com.klecer.gottado.domain.usecase.SaveWidgetConfigUseCase
 import com.klecer.gottado.widget.WidgetUpdateHelper
+import com.klecer.gottado.widget.defaultWidgetConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
@@ -33,7 +35,9 @@ class WidgetTabViewModel @Inject constructor(
     private val getWidgetConfigUseCase: GetWidgetConfigUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val saveWidgetConfigUseCase: SaveWidgetConfigUseCase,
-    private val widgetCategoryRepository: WidgetCategoryRepository
+    private val widgetCategoryRepository: WidgetCategoryRepository,
+    private val widgetConfigRepository: WidgetConfigRepository,
+    private val widgetInstanceDao: WidgetInstanceDao
 ) : ViewModel() {
 
     private val initialWidgetId: Int? = savedStateHandle.get<String>("widgetId")?.toIntOrNull()
@@ -107,16 +111,61 @@ class WidgetTabViewModel @Inject constructor(
         }
     }
 
+    fun addPreset() {
+        viewModelScope.launch {
+            val all = getAllWidgetConfigsUseCase()
+            val nextId = if (all.isEmpty()) -1
+                         else (all.minOf { it.widgetId }.coerceAtMost(0)) - 1
+            val preset = defaultWidgetConfig(nextId).copy(
+                title = "Widget ${all.size + 1}"
+            )
+            saveWidgetConfigUseCase(preset)
+            _widgets.value = getAllWidgetConfigsUseCase()
+            selectWidget(nextId)
+        }
+    }
+
+    fun deletePreset(presetId: Int) {
+        viewModelScope.launch {
+            widgetCategoryRepository.removeAllForWidget(presetId)
+            widgetConfigRepository.deleteByWidgetId(presetId)
+            val instances = widgetInstanceDao.getAll().filter { it.presetId == presetId }
+            val remaining = getAllWidgetConfigsUseCase()
+            val fallback = remaining.firstOrNull()
+            for (inst in instances) {
+                if (fallback != null) {
+                    widgetInstanceDao.upsert(inst.copy(presetId = fallback.widgetId))
+                    WidgetUpdateHelper.update(appContext, inst.appWidgetId)
+                } else {
+                    widgetInstanceDao.deleteByAppWidgetId(inst.appWidgetId)
+                }
+            }
+            _widgets.value = remaining
+            if (_selectedWidgetId.value == presetId) {
+                val next = remaining.firstOrNull()?.widgetId
+                _selectedWidgetId.value = next
+                if (next != null) selectWidget(next)
+                else {
+                    _config.value = null
+                    _categoryJoins.value = emptyList()
+                }
+            }
+        }
+    }
+
     private fun autoSave() {
         hasPendingChanges = true
         saveJob?.cancel()
         saveJob = viewModelScope.launch {
             delay(500)
-            val wId = _selectedWidgetId.value ?: return@launch
+            val presetId = _selectedWidgetId.value ?: return@launch
             val c = _config.value ?: return@launch
             saveWidgetConfigUseCase(c)
             hasPendingChanges = false
-            WidgetUpdateHelper.update(appContext, wId)
+            val instances = widgetInstanceDao.getAll().filter { it.presetId == presetId }
+            for (inst in instances) {
+                WidgetUpdateHelper.update(appContext, inst.appWidgetId)
+            }
             _widgets.value = getAllWidgetConfigsUseCase()
         }
     }
@@ -202,7 +251,7 @@ class WidgetTabViewModel @Inject constructor(
             val joins = _categoryJoins.value
             val item = joins.find { it.join.categoryId == categoryId } ?: return@launch
             widgetCategoryRepository.updateJoin(wId, categoryId, item.join.sortOrder, visible)
-            WidgetUpdateHelper.update(appContext, wId)
+            updateAllInstancesForPreset(wId)
             selectWidget(wId)
         }
     }
@@ -232,7 +281,7 @@ class WidgetTabViewModel @Inject constructor(
         reordered.forEachIndexed { index, item ->
             widgetCategoryRepository.updateJoin(wId, item.join.categoryId, index, item.join.visible)
         }
-        WidgetUpdateHelper.update(appContext, wId)
+        updateAllInstancesForPreset(wId)
         selectWidget(wId)
     }
 
@@ -240,7 +289,7 @@ class WidgetTabViewModel @Inject constructor(
         val wId = _selectedWidgetId.value ?: return
         viewModelScope.launch {
             widgetCategoryRepository.removeCategoryFromWidget(wId, categoryId)
-            WidgetUpdateHelper.update(appContext, wId)
+            updateAllInstancesForPreset(wId)
             selectWidget(wId)
         }
     }
@@ -250,8 +299,15 @@ class WidgetTabViewModel @Inject constructor(
         viewModelScope.launch {
             val nextOrder = _categoryJoins.value.size
             widgetCategoryRepository.addCategoryToWidget(wId, categoryId, nextOrder, true)
-            WidgetUpdateHelper.update(appContext, wId)
+            updateAllInstancesForPreset(wId)
             selectWidget(wId)
+        }
+    }
+
+    private suspend fun updateAllInstancesForPreset(presetId: Int) {
+        val instances = widgetInstanceDao.getAll().filter { it.presetId == presetId }
+        for (inst in instances) {
+            WidgetUpdateHelper.update(appContext, inst.appWidgetId)
         }
     }
 }

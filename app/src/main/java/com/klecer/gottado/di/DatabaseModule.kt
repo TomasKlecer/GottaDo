@@ -10,6 +10,7 @@ import com.klecer.gottado.data.db.dao.TaskDao
 import com.klecer.gottado.data.db.dao.TrashEntryDao
 import com.klecer.gottado.data.db.dao.WidgetCategoryJoinDao
 import com.klecer.gottado.data.db.dao.WidgetConfigDao
+import com.klecer.gottado.data.db.dao.WidgetInstanceDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +26,7 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "gottado.db")
-            .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3, AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7, AppDatabase.MIGRATION_7_8, AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10)
+            .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3, AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5, AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7, AppDatabase.MIGRATION_7_8, AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
@@ -56,4 +57,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideCalendarDismissedDao(db: AppDatabase): CalendarDismissedDao = db.calendarDismissedDao()
+
+    @Provides
+    @Singleton
+    fun provideWidgetInstanceDao(db: AppDatabase): WidgetInstanceDao = db.widgetInstanceDao()
 }

@@ -57,6 +57,21 @@ fun AppNavigation(
                 }
             )
         }
+        composable(
+            NavRoutes.CATEGORY_SETTINGS,
+            arguments = listOf(navArgument("categoryId") { defaultValue = "0" })
+        ) {
+            val viewModel: CategoryTabViewModel = hiltViewModel()
+            CategoryListScreen(
+                viewModel = viewModel,
+                onAddRoutine = { categoryId ->
+                    navController.navigate(NavRoutes.routineEdit(categoryId, 0))
+                },
+                onEditRoutine = { categoryId, routineId ->
+                    navController.navigate(NavRoutes.routineEdit(categoryId, routineId))
+                }
+            )
+        }
         composable(NavRoutes.RECORD_EDIT_OPTIONS) {
             val viewModel: RecordEditOptionsViewModel = hiltViewModel()
             RecordEditOptionsScreen(

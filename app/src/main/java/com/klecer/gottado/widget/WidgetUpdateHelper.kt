@@ -9,36 +9,45 @@ import android.view.View
 import android.widget.RemoteViews
 import com.klecer.gottado.R
 import com.klecer.gottado.data.db.entity.ReorderHandlePosition
+import com.klecer.gottado.data.db.entity.WidgetInstanceEntity
 import kotlinx.coroutines.runBlocking
 
 object WidgetUpdateHelper {
 
     private const val TAG = "GottaDoWidget"
 
-    fun update(context: Context, widgetId: Int) {
-        Log.d(TAG, "update() called for widgetId=$widgetId")
+    fun update(context: Context, appWidgetId: Int) {
+        Log.d(TAG, "update() called for appWidgetId=$appWidgetId")
         try {
-            updateInternal(context, widgetId)
+            updateInternal(context, appWidgetId)
         } catch (e: Throwable) {
-            Log.e(TAG, "update() failed for widgetId=$widgetId", e)
-            showError(context, widgetId, "Widget error: ${e.message}")
+            Log.e(TAG, "update() failed for appWidgetId=$appWidgetId", e)
+            showError(context, appWidgetId, "Widget error: ${e.message}")
         }
     }
 
-    private fun updateInternal(context: Context, widgetId: Int) {
+    private fun updateInternal(context: Context, appWidgetId: Int) {
         val mgr = AppWidgetManager.getInstance(context)
         val entryPoint = context.widgetEntryPoint()
         val repo = entryPoint.getWidgetConfigRepository()
+        val instanceDao = entryPoint.getWidgetInstanceDao()
 
         val config = runBlocking {
-            val existing = repo.getByWidgetId(widgetId)
-            if (existing != null) {
-                existing
-            } else {
-                val default = defaultWidgetConfig(widgetId)
-                repo.insert(default)
-                default
+            val presetId = instanceDao.getPresetId(appWidgetId)
+            if (presetId != null) {
+                val cfg = repo.getByWidgetId(presetId)
+                if (cfg != null) return@runBlocking cfg
             }
+            val allPresets = repo.getAll()
+            val preset = allPresets.firstOrNull()
+            if (preset != null) {
+                instanceDao.upsert(WidgetInstanceEntity(appWidgetId, preset.widgetId))
+                return@runBlocking preset
+            }
+            val default = defaultWidgetConfig(appWidgetId)
+            repo.insert(default)
+            instanceDao.upsert(WidgetInstanceEntity(appWidgetId, default.widgetId))
+            default
         }
 
         val rv = RemoteViews(context.packageName, R.layout.widget_gotta_do)
@@ -72,14 +81,14 @@ object WidgetUpdateHelper {
                 rv.setViewVisibility(R.id.widget_edge_left, View.VISIBLE)
                 rv.setViewVisibility(R.id.widget_edge_right, View.GONE)
                 rv.setInt(R.id.widget_edge_left, "setBackgroundColor", config.defaultTextColor)
-                val pi = WidgetIntents.openReorderPendingIntent(context, widgetId, widgetId * 100 + 1)
+                val pi = WidgetIntents.openReorderPendingIntent(context, appWidgetId, appWidgetId * 100 + 1)
                 rv.setOnClickPendingIntent(R.id.widget_edge_left, pi)
             }
             ReorderHandlePosition.RIGHT -> {
                 rv.setViewVisibility(R.id.widget_edge_left, View.GONE)
                 rv.setViewVisibility(R.id.widget_edge_right, View.VISIBLE)
                 rv.setInt(R.id.widget_edge_right, "setBackgroundColor", config.defaultTextColor)
-                val pi = WidgetIntents.openReorderPendingIntent(context, widgetId, widgetId * 100 + 2)
+                val pi = WidgetIntents.openReorderPendingIntent(context, appWidgetId, appWidgetId * 100 + 2)
                 rv.setOnClickPendingIntent(R.id.widget_edge_right, pi)
             }
             ReorderHandlePosition.NONE -> {
@@ -92,28 +101,43 @@ object WidgetUpdateHelper {
             rv.setViewVisibility(R.id.widget_footer_bar, View.GONE)
         } else {
             rv.setViewVisibility(R.id.widget_footer_bar, View.VISIBLE)
-            rv.setTextColor(R.id.widget_btn_open_app, config.defaultTextColor)
             rv.setTextColor(R.id.widget_btn_reorder, config.defaultTextColor)
-            val openAppPi = WidgetIntents.openAppPendingIntent(context, widgetId, widgetId * 100 + 3)
+            val openAppPi = WidgetIntents.openAppPendingIntent(context, config.widgetId, appWidgetId * 100 + 3)
             rv.setOnClickPendingIntent(R.id.widget_btn_open_app, openAppPi)
-            val reorderPi = WidgetIntents.openReorderPendingIntent(context, widgetId, widgetId * 100 + 4)
+            val pickerPi = WidgetIntents.openPresetPickerPendingIntent(context, appWidgetId, appWidgetId * 100 + 5)
+            rv.setOnClickPendingIntent(R.id.widget_btn_picker, pickerPi)
+            val reorderPi = WidgetIntents.openReorderPendingIntent(context, appWidgetId, appWidgetId * 100 + 4)
             rv.setOnClickPendingIntent(R.id.widget_btn_reorder, reorderPi)
         }
 
         val serviceIntent = Intent(context, GottaDoRemoteViewsService::class.java).apply {
-            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-            putExtra(GottaDoRemoteViewsFactory.EXTRA_WIDGET_ID, widgetId)
-            data = Uri.parse("gottado://widget/$widgetId")
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            putExtra(GottaDoRemoteViewsFactory.EXTRA_WIDGET_ID, appWidgetId)
+            data = Uri.parse("gottado://widget/$appWidgetId")
         }
         rv.setRemoteAdapter(R.id.widget_list, serviceIntent)
 
         val clickTemplate = WidgetIntents.listClickTemplate(context)
         rv.setPendingIntentTemplate(R.id.widget_list, clickTemplate)
 
-        mgr.updateAppWidget(widgetId, rv)
-        mgr.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_list)
+        mgr.updateAppWidget(appWidgetId, rv)
+        mgr.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list)
 
-        Log.d(TAG, "update() succeeded for widgetId=$widgetId")
+        Log.d(TAG, "update() succeeded for appWidgetId=$appWidgetId presetId=${config.widgetId}")
+    }
+
+    fun updateAllForPreset(context: Context, presetId: Int) {
+        try {
+            val instanceDao = context.widgetEntryPoint().getWidgetInstanceDao()
+            val instances = runBlocking { instanceDao.getAll() }
+            for (inst in instances) {
+                if (inst.presetId == presetId) {
+                    update(context, inst.appWidgetId)
+                }
+            }
+        } catch (e: Throwable) {
+            Log.e(TAG, "updateAllForPreset($presetId) failed", e)
+        }
     }
 
     fun showError(context: Context, widgetId: Int, message: String) {

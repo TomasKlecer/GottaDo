@@ -51,8 +51,8 @@ class CategorySettingsViewModel @Inject constructor(
             delay(500)
             val cat = _category.value ?: return@launch
             saveCategoryUseCase(cat)
-            widgetCategoryRepository.getWidgetIdsForCategory(categoryId).forEach { widgetId ->
-                WidgetUpdateHelper.update(appContext, widgetId)
+            widgetCategoryRepository.getWidgetIdsForCategory(categoryId).forEach { presetId ->
+                WidgetUpdateHelper.updateAllForPreset(appContext, presetId)
             }
         }
     }

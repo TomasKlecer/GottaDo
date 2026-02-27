@@ -76,7 +76,7 @@ class WidgetSettingsViewModel @Inject constructor(
             delay(500)
             val c = _config.value ?: return@launch
             saveWidgetConfigUseCase(c)
-            WidgetUpdateHelper.update(appContext, widgetId)
+            WidgetUpdateHelper.updateAllForPreset(appContext, widgetId)
         }
     }
 
@@ -155,7 +155,7 @@ class WidgetSettingsViewModel @Inject constructor(
             val joins = _categoryJoins.value
             val item = joins.find { it.join.categoryId == categoryId } ?: return@launch
             widgetCategoryRepository.updateJoin(widgetId, categoryId, item.join.sortOrder, visible)
-            WidgetUpdateHelper.update(appContext, widgetId)
+            WidgetUpdateHelper.updateAllForPreset(appContext, widgetId)
             load()
         }
     }
@@ -182,14 +182,14 @@ class WidgetSettingsViewModel @Inject constructor(
         reordered.forEachIndexed { index, item ->
             widgetCategoryRepository.updateJoin(widgetId, item.join.categoryId, index, item.join.visible)
         }
-        WidgetUpdateHelper.update(appContext, widgetId)
+        WidgetUpdateHelper.updateAllForPreset(appContext, widgetId)
         load()
     }
 
     fun removeCategoryFromWidget(categoryId: Long) {
         viewModelScope.launch {
             widgetCategoryRepository.removeCategoryFromWidget(widgetId, categoryId)
-            WidgetUpdateHelper.update(appContext, widgetId)
+            WidgetUpdateHelper.updateAllForPreset(appContext, widgetId)
             load()
         }
     }
@@ -198,7 +198,7 @@ class WidgetSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val nextOrder = _categoryJoins.value.size
             widgetCategoryRepository.addCategoryToWidget(widgetId, categoryId, nextOrder, true)
-            WidgetUpdateHelper.update(appContext, widgetId)
+            WidgetUpdateHelper.updateAllForPreset(appContext, widgetId)
             load()
         }
     }

@@ -160,8 +160,8 @@ class CalendarSyncManager @Inject constructor(
             affectedWidgetIds.addAll(widgetIds)
         }
 
-        for (wId in affectedWidgetIds) {
-            WidgetUpdateHelper.update(context, wId)
+        for (presetId in affectedWidgetIds) {
+            WidgetUpdateHelper.updateAllForPreset(context, presetId)
         }
 
         syncPrefs.lastSyncMillis = System.currentTimeMillis()

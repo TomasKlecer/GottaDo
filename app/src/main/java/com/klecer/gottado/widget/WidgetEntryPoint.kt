@@ -2,6 +2,7 @@ package com.klecer.gottado.widget
 
 import android.content.Context
 import android.graphics.Color
+import com.klecer.gottado.data.db.dao.WidgetInstanceDao
 import com.klecer.gottado.data.db.entity.ReorderHandlePosition
 import com.klecer.gottado.data.db.entity.WidgetConfigEntity
 import com.klecer.gottado.domain.repository.WidgetConfigRepository
@@ -28,6 +29,7 @@ interface WidgetEntryPoint {
     fun getRestoreFromTrashUseCase(): RestoreFromTrashUseCase
     fun getReorderTasksUseCase(): ReorderTasksUseCase
     fun getDeleteTaskUseCase(): DeleteTaskUseCase
+    fun getWidgetInstanceDao(): WidgetInstanceDao
 }
 
 fun Context.widgetEntryPoint(): WidgetEntryPoint =

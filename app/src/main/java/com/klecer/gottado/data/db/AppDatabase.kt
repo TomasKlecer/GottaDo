@@ -20,6 +20,8 @@ import com.klecer.gottado.data.db.entity.TaskEntity
 import com.klecer.gottado.data.db.entity.TrashEntryEntity
 import com.klecer.gottado.data.db.entity.WidgetCategoryJoinEntity
 import com.klecer.gottado.data.db.entity.WidgetConfigEntity
+import com.klecer.gottado.data.db.entity.WidgetInstanceEntity
+import com.klecer.gottado.data.db.dao.WidgetInstanceDao
 
 @Database(
     entities = [
@@ -29,9 +31,10 @@ import com.klecer.gottado.data.db.entity.WidgetConfigEntity
         TaskEntity::class,
         RoutineEntity::class,
         TrashEntryEntity::class,
-        CalendarDismissedEntity::class
+        CalendarDismissedEntity::class,
+        WidgetInstanceEntity::class
     ],
-    version = 10,
+    version = 11,
     exportSchema = true
 )
 @TypeConverters(AppConverters::class)
@@ -43,6 +46,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun routineDao(): RoutineDao
     abstract fun trashEntryDao(): TrashEntryDao
     abstract fun calendarDismissedDao(): CalendarDismissedDao
+    abstract fun widgetInstanceDao(): WidgetInstanceDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -94,6 +98,12 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE widget_config ADD COLUMN buttonsAtBottom INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS widget_instance (appWidgetId INTEGER NOT NULL PRIMARY KEY, presetId INTEGER NOT NULL)")
+                db.execSQL("INSERT OR IGNORE INTO widget_instance (appWidgetId, presetId) SELECT widgetId, widgetId FROM widget_config")
             }
         }
     }

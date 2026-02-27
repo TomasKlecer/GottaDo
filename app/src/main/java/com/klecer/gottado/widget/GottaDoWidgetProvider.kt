@@ -34,12 +34,10 @@ class GottaDoWidgetProvider : AppWidgetProvider() {
         Log.d(TAG, "onDeleted widgetIds=${appWidgetIds.toList()}")
         try {
             val entryPoint = context.widgetEntryPoint()
-            val configRepo = entryPoint.getWidgetConfigRepository()
-            val categoryRepo = entryPoint.getWidgetCategoryRepository()
+            val instanceDao = entryPoint.getWidgetInstanceDao()
             runBlocking {
-                for (widgetId in appWidgetIds) {
-                    categoryRepo.removeAllForWidget(widgetId)
-                    configRepo.deleteByWidgetId(widgetId)
+                for (appWidgetId in appWidgetIds) {
+                    instanceDao.deleteByAppWidgetId(appWidgetId)
                 }
             }
         } catch (e: Throwable) {

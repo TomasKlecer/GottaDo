@@ -17,6 +17,7 @@ object WidgetIntents {
     const val ACTION_DELETE_TASK = "com.klecer.gottado.widget.ACTION_DELETE_TASK"
     const val ACTION_MOVE_TASK_UP = "com.klecer.gottado.widget.ACTION_MOVE_TASK_UP"
     const val ACTION_MOVE_TASK_DOWN = "com.klecer.gottado.widget.ACTION_MOVE_TASK_DOWN"
+    const val ACTION_PICK_PRESET = "com.klecer.gottado.widget.ACTION_PICK_PRESET"
     const val ACTION_LIST_CLICK = "com.klecer.gottado.widget.ACTION_LIST_CLICK"
 
     const val EXTRA_WIDGET_ID = "widgetId"
@@ -83,10 +84,18 @@ object WidgetIntents {
         return PendingIntent.getActivity(context, requestCode, intent, immutableFlags())
     }
 
-    fun openAppPendingIntent(context: Context, widgetId: Int, requestCode: Int): PendingIntent {
+    fun openAppPendingIntent(context: Context, presetId: Int, requestCode: Int): PendingIntent {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("navigate_to", "widget_settings/$widgetId")
+            putExtra("navigate_to", "widget_settings/$presetId")
+        }
+        return PendingIntent.getActivity(context, requestCode, intent, immutableFlags())
+    }
+
+    fun openPresetPickerPendingIntent(context: Context, appWidgetId: Int, requestCode: Int): PendingIntent {
+        val intent = Intent(context, WidgetPresetPickerActivity::class.java).apply {
+            putExtra(EXTRA_WIDGET_ID, appWidgetId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY
         }
         return PendingIntent.getActivity(context, requestCode, intent, immutableFlags())
     }

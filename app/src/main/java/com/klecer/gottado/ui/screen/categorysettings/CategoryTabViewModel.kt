@@ -1,6 +1,7 @@
 package com.klecer.gottado.ui.screen.categorysettings
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.klecer.gottado.data.db.entity.CategoryEntity
@@ -26,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryTabViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
+    savedStateHandle: SavedStateHandle,
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getCategoryUseCase: GetCategoryUseCase,
     private val saveCategoryUseCase: SaveCategoryUseCase,
@@ -33,6 +35,8 @@ class CategoryTabViewModel @Inject constructor(
     private val getRoutinesForCategoryUseCase: GetRoutinesForCategoryUseCase,
     private val deleteRoutineUseCase: DeleteRoutineUseCase
 ) : ViewModel() {
+
+    private val initialCategoryId: Long? = savedStateHandle.get<String>("categoryId")?.toLongOrNull()
 
     private val _categories = MutableStateFlow<List<CategoryEntity>>(emptyList())
     val categories: StateFlow<List<CategoryEntity>> = _categories.asStateFlow()
@@ -68,7 +72,12 @@ class CategoryTabViewModel @Inject constructor(
         viewModelScope.launch {
             _categories.value = getCategoriesUseCase()
             if (_selectedCategoryId.value == null) {
-                _categories.value.firstOrNull()?.let { selectCategory(it.id) }
+                val target = if (initialCategoryId != null && _categories.value.any { it.id == initialCategoryId }) {
+                    initialCategoryId
+                } else {
+                    _categories.value.firstOrNull()?.id
+                }
+                target?.let { selectCategory(it) }
             }
         }
     }
@@ -125,8 +134,8 @@ class CategoryTabViewModel @Inject constructor(
             saveCategoryUseCase(cat)
             hasPendingChanges = false
             val catId = _selectedCategoryId.value ?: return@launch
-            widgetCategoryRepository.getWidgetIdsForCategory(catId).forEach { widgetId ->
-                WidgetUpdateHelper.update(appContext, widgetId)
+            widgetCategoryRepository.getWidgetIdsForCategory(catId).forEach { presetId ->
+                WidgetUpdateHelper.updateAllForPreset(appContext, presetId)
             }
             _categories.value = getCategoriesUseCase()
         }

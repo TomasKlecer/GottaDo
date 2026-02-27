@@ -135,6 +135,12 @@
     <string name="info_widget_cat_font_size">Font size for category headers on the widget</string>
     <string name="info_widget_record_font_size">Font size for task entries on the widget</string>
     <string name="info_widget_reorder_handle">Tap strip on the widget edge to open the reorder overlay (LEFT/RIGHT), or NONE to hide</string>
+    <string name="widget_add_preset">Add widget</string>
+    <string name="widget_delete_preset">Delete this widget</string>
+    <string name="widget_delete_preset_title">Delete widget?</string>
+    <string name="widget_delete_preset_message">This will delete this widget preset and its category assignments. Widget instances on the home screen using this preset will be reassigned to another one.</string>
+    <string name="widget_delete_confirm">Delete</string>
+    <string name="widget_delete_cancel">Cancel</string>
     <string name="widget_settings_buttons_at_bottom">Place buttons below entries</string>
     <string name="info_widget_buttons_at_bottom">When enabled, Open App and Reorder buttons are placed below all entries (scrollable). Otherwise they float at the bottom of the widget.</string>
 

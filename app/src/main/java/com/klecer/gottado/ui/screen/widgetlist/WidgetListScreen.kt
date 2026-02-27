@@ -1,9 +1,5 @@
 package com.klecer.gottado.ui.screen.widgetlist
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Context
-import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,14 +18,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
@@ -51,13 +52,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.klecer.gottado.R
 import com.klecer.gottado.data.db.entity.ReorderHandlePosition
 import com.klecer.gottado.ui.screen.widgetsettings.WidgetTabViewModel
-import com.klecer.gottado.widget.GottaDoWidgetProvider
 import kotlinx.coroutines.launch
 
 private val BG_COLORS = listOf(
@@ -81,7 +80,6 @@ fun WidgetListScreen(
     val config by viewModel.config.collectAsState()
     val categoryJoins by viewModel.categoryJoins.collectAsState()
     val allCategories by viewModel.allCategories.collectAsState()
-    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.refreshData()
@@ -98,22 +96,36 @@ fun WidgetListScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Button(
-                    onClick = {
-                        val awm = context.getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
-                        val provider = ComponentName(context, GottaDoWidgetProvider::class.java)
-                        if (awm.isRequestPinAppWidgetSupported) {
-                            awm.requestPinAppWidget(provider, null, null)
-                        }
-                    },
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Text(stringResource(R.string.widget_list_add_widget))
-                }
+            Button(
+                onClick = { viewModel.addPreset() },
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(stringResource(R.string.widget_add_preset))
             }
         }
         return
+    }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    if (showDeleteDialog && selectedId != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.widget_delete_preset_title)) },
+            text = { Text(stringResource(R.string.widget_delete_preset_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deletePreset(selectedId!!)
+                    showDeleteDialog = false
+                }) {
+                    Text(stringResource(R.string.widget_delete_confirm), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.widget_delete_cancel))
+                }
+            }
+        )
     }
 
     Column(
@@ -123,36 +135,46 @@ fun WidgetListScreen(
             .padding(16.dp)
     ) {
         var selectorExpanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(
-            expanded = selectorExpanded,
-            onExpandedChange = { selectorExpanded = it }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedTextField(
-                value = widgets.find { it.widgetId == selectedId }?.let {
-                    it.title?.takeIf { t -> t.isNotBlank() }
-                        ?: stringResource(R.string.widget_list_item_default, it.widgetId)
-                } ?: "",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.tab_widgets)) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = selectorExpanded) },
-                modifier = Modifier.fillMaxWidth().menuAnchor()
-            )
-            ExposedDropdownMenu(
+            ExposedDropdownMenuBox(
                 expanded = selectorExpanded,
-                onDismissRequest = { selectorExpanded = false }
+                onExpandedChange = { selectorExpanded = it },
+                modifier = Modifier.weight(1f)
             ) {
-                widgets.forEach { w ->
-                    val label = w.title?.takeIf { it.isNotBlank() }
-                        ?: stringResource(R.string.widget_list_item_default, w.widgetId)
-                    DropdownMenuItem(
-                        text = { Text(label) },
-                        onClick = {
-                            viewModel.selectWidget(w.widgetId)
-                            selectorExpanded = false
-                        }
-                    )
+                OutlinedTextField(
+                    value = widgets.find { it.widgetId == selectedId }?.let {
+                        it.title?.takeIf { t -> t.isNotBlank() }
+                            ?: stringResource(R.string.widget_list_item_default, it.widgetId)
+                    } ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.tab_widgets)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = selectorExpanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = selectorExpanded,
+                    onDismissRequest = { selectorExpanded = false }
+                ) {
+                    widgets.forEach { w ->
+                        val label = w.title?.takeIf { it.isNotBlank() }
+                            ?: stringResource(R.string.widget_list_item_default, w.widgetId)
+                        DropdownMenuItem(
+                            text = { Text(label) },
+                            onClick = {
+                                viewModel.selectWidget(w.widgetId)
+                                selectorExpanded = false
+                            }
+                        )
+                    }
                 }
+            }
+            Spacer(Modifier.width(8.dp))
+            IconButton(onClick = { viewModel.addPreset() }) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.widget_add_preset))
             }
         }
 
@@ -294,6 +316,15 @@ fun WidgetListScreen(
             Text(stringResource(R.string.widget_settings_buttons_at_bottom))
             Spacer(Modifier.width(4.dp))
             InfoIcon(stringResource(R.string.info_widget_buttons_at_bottom))
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = { showDeleteDialog = true },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        ) {
+            Text(stringResource(R.string.widget_delete_preset))
         }
     }
 }
