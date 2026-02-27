@@ -14,6 +14,7 @@ import com.klecer.gottado.domain.usecase.GetAllWidgetConfigsUseCase
 import com.klecer.gottado.domain.usecase.GetCategoriesUseCase
 import com.klecer.gottado.domain.usecase.GetWidgetConfigUseCase
 import com.klecer.gottado.domain.usecase.SaveWidgetConfigUseCase
+import com.klecer.gottado.ui.color.ColorPrefs
 import com.klecer.gottado.widget.WidgetUpdateHelper
 import com.klecer.gottado.widget.defaultWidgetConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +38,8 @@ class WidgetTabViewModel @Inject constructor(
     private val saveWidgetConfigUseCase: SaveWidgetConfigUseCase,
     private val widgetCategoryRepository: WidgetCategoryRepository,
     private val widgetConfigRepository: WidgetConfigRepository,
-    private val widgetInstanceDao: WidgetInstanceDao
+    private val widgetInstanceDao: WidgetInstanceDao,
+    val colorPrefs: ColorPrefs
 ) : ViewModel() {
 
     private val initialWidgetId: Int? = savedStateHandle.get<String>("widgetId")?.toIntOrNull()

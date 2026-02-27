@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.klecer.gottado.calendar.CalendarSyncScheduler
+import com.klecer.gottado.notification.NotificationHelper
 import com.klecer.gottado.worker.RoutineWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
@@ -29,6 +30,7 @@ class GottaDoApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        NotificationHelper.ensureChannel(this)
         enqueueRoutineWorker()
         calendarSyncScheduler.scheduleFromPrefs()
     }

@@ -6,6 +6,7 @@ import com.klecer.gottado.data.db.entity.TrashEntryEntity
 import com.klecer.gottado.domain.repository.CategoryRepository
 import com.klecer.gottado.domain.repository.TaskRepository
 import com.klecer.gottado.domain.repository.TrashRepository
+import com.klecer.gottado.notification.TaskNotificationScheduler
 import javax.inject.Inject
 
 /**
@@ -17,10 +18,12 @@ class DeleteTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
     private val trashRepository: TrashRepository,
     private val categoryRepository: CategoryRepository,
-    private val calendarDismissedDao: CalendarDismissedDao
+    private val calendarDismissedDao: CalendarDismissedDao,
+    private val notificationScheduler: TaskNotificationScheduler
 ) {
     suspend operator fun invoke(taskId: Long): Long? {
         val task = taskRepository.getById(taskId) ?: return null
+        notificationScheduler.cancelForTask(taskId)
         val categoryName = categoryRepository.getById(task.categoryId)?.name ?: ""
 
         if (task.fromCalendarSync) {

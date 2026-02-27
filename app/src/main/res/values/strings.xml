@@ -49,6 +49,14 @@
     <string name="category_settings_name">Name</string>
     <string name="category_settings_show_checkbox">Show checkbox instead of bullet</string>
     <string name="category_settings_tasks_time_first">Tasks with time first</string>
+    <string name="category_settings_auto_sort_timed">Auto-sort timed entries</string>
+    <string name="info_cat_auto_sort_timed">Automatically group entries with a scheduled time together</string>
+    <string name="category_settings_timed_position_top">Top</string>
+    <string name="category_settings_timed_position_bottom">Bottom</string>
+    <string name="info_cat_timed_position">Where timed entries are placed: at the top or the bottom of the list</string>
+    <string name="category_settings_timed_order_asc">Ascending</string>
+    <string name="category_settings_timed_order_desc">Descending</string>
+    <string name="info_cat_timed_order">Sort timed entries from earliest to latest (ascending) or latest to earliest (descending)</string>
     <string name="category_settings_type">Type</string>
     <string name="category_settings_color">Category color</string>
     <string name="category_settings_save">Save</string>
@@ -62,6 +70,22 @@
     <string name="category_type_friday">Friday</string>
     <string name="category_type_saturday">Saturday</string>
     <string name="category_type_sunday">Sunday</string>
+
+    <string name="calendar_sync_rules_label">Calendar sync rules</string>
+    <string name="calendar_sync_rules_add">Add rule…</string>
+    <string name="sync_rule_TODAY">Today</string>
+    <string name="sync_rule_TOMORROW">Tomorrow</string>
+    <string name="sync_rule_CLOSEST_MONDAY">Closest Monday</string>
+    <string name="sync_rule_CLOSEST_TUESDAY">Closest Tuesday</string>
+    <string name="sync_rule_CLOSEST_WEDNESDAY">Closest Wednesday</string>
+    <string name="sync_rule_CLOSEST_THURSDAY">Closest Thursday</string>
+    <string name="sync_rule_CLOSEST_FRIDAY">Closest Friday</string>
+    <string name="sync_rule_CLOSEST_SATURDAY">Closest Saturday</string>
+    <string name="sync_rule_CLOSEST_SUNDAY">Closest Sunday</string>
+    <string name="sync_rule_THIS_WEEK">This week</string>
+    <string name="sync_rule_NEXT_WEEK">Next week</string>
+    <string name="sync_rule_THIS_MONTH">This month</string>
+    <string name="sync_rule_NEXT_MONTH">Next month</string>
 
     <string name="record_edit_options_title">Entry options</string>
     <string name="record_edit_options_rich_text">Allow rich text</string>
@@ -169,9 +193,42 @@
     <string name="settings_calendar_permission">Calendar permission required</string>
     <string name="settings_calendar_grant_permission">Grant permission</string>
     <string name="info_cat_calendar_sync">When enabled, today\'s calendar events will be added as task entries in this category during sync</string>
+    <string name="info_cat_sync_rules">Add rules to automatically sync calendar events for specific days or periods into this category</string>
     <string name="category_settings_sync_calendar">Sync with today\'s calendar events</string>
     <string name="category_settings_show_calendar_icon">Show calendar icon on synced entries</string>
     <string name="info_cat_show_calendar_icon">Display a small calendar icon next to task entries that were imported from your calendar</string>
     <string name="category_settings_show_delete_button">Show delete button on entries</string>
     <string name="info_cat_show_delete_button">Show a trash icon on each entry in this category for quick deletion directly from the widget</string>
+
+    <string name="settings_notifications_section">Notifications</string>
+    <string name="settings_notifications_enable">Enable notifications</string>
+    <string name="settings_notifications_enable_desc">Send notifications before scheduled task entries</string>
+    <string name="settings_notifications_permission">Notification permission required</string>
+    <string name="settings_notifications_grant_permission">Grant permission</string>
+
+    <string name="category_settings_notify_on_time">Send notification on entries with time</string>
+    <string name="info_cat_notify_on_time">When enabled, a notification will be sent before entries that have a scheduled time</string>
+    <string name="category_settings_notify_minutes_before">Notify before</string>
+    <string name="info_cat_notify_minutes_before">How many minutes before the scheduled time the notification should appear</string>
+    <string name="notify_at_time">At time</string>
+    <string name="notify_5_min">5 minutes before</string>
+    <string name="notify_10_min">10 minutes before</string>
+    <string name="notify_15_min">15 minutes before</string>
+    <string name="notify_30_min">30 minutes before</string>
+    <string name="notify_1_hour">1 hour before</string>
+    <string name="notify_2_hours">2 hours before</string>
+
+    <string name="disabled_calendar_sync_tooltip">Enable calendar sync in Settings first</string>
+    <string name="disabled_notifications_tooltip">Enable notifications in Settings first</string>
+
+    <string name="notification_channel_name">Task reminders</string>
+    <string name="notification_channel_desc">Notifications for scheduled task entries</string>
+
+    <string name="settings_color_pickers_section">Color pickers</string>
+    <string name="settings_color_picker_title">Select color</string>
+    <string name="settings_color_picker_defaults">Defaults</string>
+    <string name="settings_palette_category">Category colors</string>
+    <string name="settings_palette_entry">Entry colors</string>
+    <string name="settings_palette_widget_bg">Widget background colors</string>
+    <string name="settings_palette_widget_text">Widget text colors</string>
 </resources>

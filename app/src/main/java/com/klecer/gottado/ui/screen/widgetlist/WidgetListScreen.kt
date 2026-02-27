@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,19 +57,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.klecer.gottado.R
 import com.klecer.gottado.data.db.entity.ReorderHandlePosition
+import com.klecer.gottado.ui.color.ColorPrefs
 import com.klecer.gottado.ui.screen.widgetsettings.WidgetTabViewModel
 import kotlinx.coroutines.launch
-
-private val BG_COLORS = listOf(
-    0xFF000000.toInt(), 0xFF333333.toInt(), 0xFF666666.toInt(), 0xFF999999.toInt(),
-    0xFFFFFFFF.toInt(), 0xFF1A237E.toInt(), 0xFF004D40.toInt(), 0xFF3E2723.toInt()
-)
-
-private val TEXT_COLORS = listOf(
-    0xFFFFFFFF.toInt(), 0xFF000000.toInt(), 0xFF666666.toInt(),
-    0xFFE53935.toInt(), 0xFFFB8C00.toInt(), 0xFFFDD835.toInt(),
-    0xFF43A047.toInt(), 0xFF1E88E5.toInt(), 0xFF8E24AA.toInt()
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -257,20 +248,23 @@ fun WidgetListScreen(
             }
         }
 
+        val bgColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_WIDGET_BG)
+        val textColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_WIDGET_TEXT)
+
         LabelWithInfo(stringResource(R.string.widget_settings_bg_color), stringResource(R.string.info_widget_bg_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(BG_COLORS, config!!.backgroundColor) { viewModel.updateBackgroundColor(it) }
+        ColorRow(bgColors, config!!.backgroundColor) { viewModel.updateBackgroundColor(it) }
 
         LabelWithInfo(stringResource(R.string.widget_settings_background), stringResource(R.string.info_widget_bg_opacity), Modifier.padding(top = 16.dp))
         SliderRow(config!!.backgroundAlpha, 0f..1f, { viewModel.updateBackgroundAlpha(it) }) { "%.0f%%".format(it * 100) }
 
         LabelWithInfo(stringResource(R.string.widget_settings_title_color), stringResource(R.string.info_widget_title_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(TEXT_COLORS, config!!.titleColor) { viewModel.updateTitleColor(it) }
+        ColorRow(textColors, config!!.titleColor) { viewModel.updateTitleColor(it) }
 
         LabelWithInfo(stringResource(R.string.widget_settings_subtitle_color), stringResource(R.string.info_widget_subtitle_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(TEXT_COLORS, config!!.subtitleColor) { viewModel.updateSubtitleColor(it) }
+        ColorRow(textColors, config!!.subtitleColor) { viewModel.updateSubtitleColor(it) }
 
         LabelWithInfo(stringResource(R.string.widget_settings_default_text_color), stringResource(R.string.info_widget_default_text_color), Modifier.padding(top = 16.dp, bottom = 8.dp))
-        ColorRow(TEXT_COLORS, config!!.defaultTextColor) { viewModel.updateDefaultTextColor(it) }
+        ColorRow(textColors, config!!.defaultTextColor) { viewModel.updateDefaultTextColor(it) }
 
         LabelWithInfo(stringResource(R.string.widget_settings_bullet_size), stringResource(R.string.info_widget_bullet_size), Modifier.padding(top = 16.dp))
         SliderRow(config!!.bulletSizeDp.toFloat(), 4f..24f, { viewModel.updateBulletSizeDp(it.toInt()) }) { "${it.toInt()}dp" }
@@ -331,12 +325,13 @@ fun WidgetListScreen(
 
 @Composable
 private fun ColorRow(colors: List<Int>, selected: Int, onSelect: (Int) -> Unit) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
         colors.forEach { color ->
             val isSel = (selected and 0x00FFFFFF) == (color and 0x00FFFFFF)
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .weight(1f)
+                    .aspectRatio(1f)
                     .clip(CircleShape)
                     .background(Color(color))
                     .then(

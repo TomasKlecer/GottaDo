@@ -22,6 +22,7 @@ import com.klecer.gottado.domain.usecase.GetRecordEditOptionsUseCase
 import com.klecer.gottado.widget.WidgetIntents
 import com.klecer.gottado.widget.WidgetUpdateHelper
 import com.klecer.gottado.widget.widgetEntryPoint
+import com.klecer.gottado.ui.color.ColorPrefs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -35,6 +36,9 @@ class RecordEditActivity : ComponentActivity() {
 
     @Inject
     lateinit var getRecordEditOptionsUseCase: GetRecordEditOptionsUseCase
+
+    @Inject
+    lateinit var colorPrefs: ColorPrefs
 
     private lateinit var contentEdit: EditText
     private lateinit var categorySpinner: android.widget.Spinner
@@ -50,16 +54,9 @@ class RecordEditActivity : ComponentActivity() {
     private var initialContentSet = false
     private var unifiedColorMode = false
 
-    private val presetColors = listOf(
-        0xFFFFFFFF.toInt(),
-        0xFF000000.toInt(),
-        0xFFE53935.toInt(),
-        0xFFFB8C00.toInt(),
-        0xFFFDD835.toInt(),
-        0xFF43A047.toInt(),
-        0xFF1E88E5.toInt(),
-        0xFF8E24AA.toInt()
-    )
+    private val presetColors: List<Int> by lazy {
+        colorPrefs.getPalette(ColorPrefs.KEY_ENTRY)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

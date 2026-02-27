@@ -19,5 +19,13 @@ data class CategoryEntity(
     @ColumnInfo(defaultValue = "1")
     val showCalendarIcon: Boolean = true,
     @ColumnInfo(defaultValue = "0")
-    val showDeleteButton: Boolean = false
+    val showDeleteButton: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
+    val notifyOnTime: Boolean = false,
+    @ColumnInfo(defaultValue = "15")
+    val notifyMinutesBefore: Int = 15,
+    @ColumnInfo(defaultValue = "1")
+    val autoSortTimedEntries: Boolean = true,
+    @ColumnInfo(defaultValue = "1")
+    val timedEntriesAscending: Boolean = true
 )

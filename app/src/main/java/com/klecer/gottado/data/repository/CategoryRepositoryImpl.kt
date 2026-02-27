@@ -29,7 +29,11 @@ class CategoryRepositoryImpl @Inject constructor(
             color = entity.color,
             syncWithCalendarToday = entity.syncWithCalendarToday,
             showCalendarIcon = entity.showCalendarIcon,
-            showDeleteButton = entity.showDeleteButton
+            showDeleteButton = entity.showDeleteButton,
+            notifyOnTime = entity.notifyOnTime,
+            notifyMinutesBefore = entity.notifyMinutesBefore,
+            autoSortTimedEntries = entity.autoSortTimedEntries,
+            timedEntriesAscending = entity.timedEntriesAscending
         )
     }
 

@@ -3,9 +3,16 @@
 package com.klecer.gottado.ui.screen.settings
 
 import android.Manifest
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +22,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
@@ -42,10 +52,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.klecer.gottado.R
 import com.klecer.gottado.calendar.SyncFrequency
+import com.klecer.gottado.ui.color.ColorPrefs
+import com.klecer.gottado.ui.color.HsvColorPickerDialog
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -61,6 +75,15 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         viewModel.refreshPermission()
         if (granted && !state.calendarEnabled) {
             viewModel.setCalendarEnabled(true)
+        }
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        viewModel.refreshNotificationPermission()
+        if (granted && !state.notificationsEnabled) {
+            viewModel.setNotificationsEnabled(true)
         }
     }
 
@@ -87,28 +110,27 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             Button(onClick = { permissionLauncher.launch(Manifest.permission.READ_CALENDAR) }) {
                 Text(stringResource(R.string.settings_calendar_grant_permission))
             }
-            return
-        }
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
-                checked = state.calendarEnabled,
-                onCheckedChange = { viewModel.setCalendarEnabled(it) }
-            )
-            Column {
-                Text(
-                    stringResource(R.string.settings_calendar_enable),
-                    style = MaterialTheme.typography.bodyLarge
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = state.calendarEnabled,
+                    onCheckedChange = { viewModel.setCalendarEnabled(it) }
                 )
-                Text(
-                    stringResource(R.string.settings_calendar_enable_desc),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column {
+                    Text(
+                        stringResource(R.string.settings_calendar_enable),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        stringResource(R.string.settings_calendar_enable_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
 
-        if (state.calendarEnabled) {
+        if (state.hasPermission && state.calendarEnabled) {
             Spacer(Modifier.size(12.dp))
 
             Text(
@@ -160,5 +182,132 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             }
             Text(lastSync, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
+
+        Spacer(Modifier.size(24.dp))
+
+        Text(
+            stringResource(R.string.settings_notifications_section),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !state.hasNotificationPermission) {
+            Text(
+                stringResource(R.string.settings_notifications_permission),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Button(onClick = { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) }) {
+                Text(stringResource(R.string.settings_notifications_grant_permission))
+            }
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = state.notificationsEnabled,
+                    onCheckedChange = { viewModel.setNotificationsEnabled(it) }
+                )
+                Column {
+                    Text(
+                        stringResource(R.string.settings_notifications_enable),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        stringResource(R.string.settings_notifications_enable_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.size(24.dp))
+        ColorPickersSection(viewModel)
+    }
+}
+
+private val PALETTE_ENTRIES = listOf(
+    ColorPrefs.KEY_CATEGORY to R.string.settings_palette_category,
+    ColorPrefs.KEY_ENTRY to R.string.settings_palette_entry,
+    ColorPrefs.KEY_WIDGET_BG to R.string.settings_palette_widget_bg,
+    ColorPrefs.KEY_WIDGET_TEXT to R.string.settings_palette_widget_text
+)
+
+@Composable
+private fun ColorPickersSection(viewModel: SettingsViewModel) {
+    val palettes by viewModel.colorPalettes.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+    var editingKey by remember { mutableStateOf<String?>(null) }
+    var editingIndex by remember { mutableStateOf(0) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            stringResource(R.string.settings_color_pickers_section),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+            contentDescription = null
+        )
+    }
+
+    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+    AnimatedVisibility(visible = expanded) {
+        Column {
+            PALETTE_ENTRIES.forEach { (key, labelRes) ->
+                val colors = palettes[key] ?: emptyList()
+                Text(
+                    stringResource(labelRes),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = 12.dp, bottom = 6.dp)
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    colors.forEachIndexed { index, color ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .clip(CircleShape)
+                                .background(Color(color))
+                                .border(1.dp, Color.LightGray, CircleShape)
+                                .clickable {
+                                    editingKey = key
+                                    editingIndex = index
+                                }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (editingKey != null) {
+        val key = editingKey!!
+        val colors = palettes[key] ?: emptyList()
+        val defaultColors = when (key) {
+            ColorPrefs.KEY_CATEGORY -> ColorPrefs.DEFAULT_CATEGORY
+            ColorPrefs.KEY_ENTRY -> ColorPrefs.DEFAULT_ENTRY
+            ColorPrefs.KEY_WIDGET_BG -> ColorPrefs.DEFAULT_WIDGET_BG
+            ColorPrefs.KEY_WIDGET_TEXT -> ColorPrefs.DEFAULT_WIDGET_TEXT
+            else -> ColorPrefs.DEFAULT_CATEGORY
+        }
+        HsvColorPickerDialog(
+            currentColor = colors.getOrElse(editingIndex) { 0xFFFFFFFF.toInt() },
+            defaultColors = defaultColors,
+            onColorSelected = { color -> viewModel.updatePaletteColor(key, editingIndex, color) },
+            onDismiss = { editingKey = null }
+        )
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Switch
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,29 +61,40 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.ui.draw.alpha
 import com.klecer.gottado.R
+import com.klecer.gottado.data.db.entity.CalendarSyncRuleType
+import com.klecer.gottado.ui.color.ColorPrefs
 import com.klecer.gottado.data.db.entity.RoutineEntity
 import com.klecer.gottado.data.db.entity.RoutineFrequency
 import com.klecer.gottado.ui.screen.categorysettings.CategoryTabViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-private val CATEGORY_TYPES = listOf(
-    "normal" to R.string.category_type_normal,
-    "today" to R.string.category_type_today,
-    "tomorrow" to R.string.category_type_tomorrow,
-    "monday" to R.string.category_type_monday,
-    "tuesday" to R.string.category_type_tuesday,
-    "wednesday" to R.string.category_type_wednesday,
-    "thursday" to R.string.category_type_thursday,
-    "friday" to R.string.category_type_friday,
-    "saturday" to R.string.category_type_saturday,
-    "sunday" to R.string.category_type_sunday
-)
+private val SYNC_RULE_TYPES = CalendarSyncRuleType.entries.map { it.name to when (it) {
+    CalendarSyncRuleType.TODAY -> R.string.sync_rule_TODAY
+    CalendarSyncRuleType.TOMORROW -> R.string.sync_rule_TOMORROW
+    CalendarSyncRuleType.CLOSEST_MONDAY -> R.string.sync_rule_CLOSEST_MONDAY
+    CalendarSyncRuleType.CLOSEST_TUESDAY -> R.string.sync_rule_CLOSEST_TUESDAY
+    CalendarSyncRuleType.CLOSEST_WEDNESDAY -> R.string.sync_rule_CLOSEST_WEDNESDAY
+    CalendarSyncRuleType.CLOSEST_THURSDAY -> R.string.sync_rule_CLOSEST_THURSDAY
+    CalendarSyncRuleType.CLOSEST_FRIDAY -> R.string.sync_rule_CLOSEST_FRIDAY
+    CalendarSyncRuleType.CLOSEST_SATURDAY -> R.string.sync_rule_CLOSEST_SATURDAY
+    CalendarSyncRuleType.CLOSEST_SUNDAY -> R.string.sync_rule_CLOSEST_SUNDAY
+    CalendarSyncRuleType.THIS_WEEK -> R.string.sync_rule_THIS_WEEK
+    CalendarSyncRuleType.NEXT_WEEK -> R.string.sync_rule_NEXT_WEEK
+    CalendarSyncRuleType.THIS_MONTH -> R.string.sync_rule_THIS_MONTH
+    CalendarSyncRuleType.NEXT_MONTH -> R.string.sync_rule_NEXT_MONTH
+} }
 
-private val PRESET_COLORS = listOf(
-    0xFFFFFFFF.toInt(), 0xFF000000.toInt(), 0xFFE53935.toInt(), 0xFFFB8C00.toInt(),
-    0xFFFDD835.toInt(), 0xFF43A047.toInt(), 0xFF1E88E5.toInt(), 0xFF8E24AA.toInt()
+private val NOTIFY_MINUTES_OPTIONS = listOf(
+    0 to R.string.notify_at_time,
+    5 to R.string.notify_5_min,
+    10 to R.string.notify_10_min,
+    15 to R.string.notify_15_min,
+    30 to R.string.notify_30_min,
+    60 to R.string.notify_1_hour,
+    120 to R.string.notify_2_hours
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,6 +108,7 @@ fun CategoryListScreen(
     val selectedId by viewModel.selectedCategoryId.collectAsState()
     val category by viewModel.category.collectAsState()
     val routines by viewModel.routines.collectAsState()
+    val syncRules by viewModel.syncRules.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -216,17 +230,20 @@ fun CategoryListScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        val categoryColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_CATEGORY)
+
         LabelWithInfo(
             stringResource(R.string.category_settings_color),
             stringResource(R.string.info_cat_color),
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            PRESET_COLORS.forEach { color ->
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+            categoryColors.forEach { color ->
                 val selected = category!!.color == color
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .weight(1f)
+                        .aspectRatio(1f)
                         .clip(CircleShape)
                         .background(Color(color))
                         .then(
@@ -245,17 +262,27 @@ fun CategoryListScreen(
             info = stringResource(R.string.info_cat_checkbox)
         )
         CheckboxWithInfo(
-            checked = category!!.tasksWithTimeFirst,
-            onCheckedChange = viewModel::updateTasksWithTimeFirst,
-            label = stringResource(R.string.category_settings_tasks_time_first),
-            info = stringResource(R.string.info_cat_time_first)
+            checked = category!!.autoSortTimedEntries,
+            onCheckedChange = viewModel::updateAutoSortTimedEntries,
+            label = stringResource(R.string.category_settings_auto_sort_timed),
+            info = stringResource(R.string.info_cat_auto_sort_timed)
         )
-        CheckboxWithInfo(
-            checked = category!!.syncWithCalendarToday,
-            onCheckedChange = viewModel::updateSyncWithCalendarToday,
-            label = stringResource(R.string.category_settings_sync_calendar),
-            info = stringResource(R.string.info_cat_calendar_sync)
-        )
+        if (category!!.autoSortTimedEntries) {
+            SwitchWithInfo(
+                checked = category!!.tasksWithTimeFirst,
+                onCheckedChange = viewModel::updateTasksWithTimeFirst,
+                labelOn = stringResource(R.string.category_settings_timed_position_top),
+                labelOff = stringResource(R.string.category_settings_timed_position_bottom),
+                info = stringResource(R.string.info_cat_timed_position)
+            )
+            SwitchWithInfo(
+                checked = category!!.timedEntriesAscending,
+                onCheckedChange = viewModel::updateTimedEntriesAscending,
+                labelOn = stringResource(R.string.category_settings_timed_order_asc),
+                labelOff = stringResource(R.string.category_settings_timed_order_desc),
+                info = stringResource(R.string.info_cat_timed_order)
+            )
+        }
         CheckboxWithInfo(
             checked = category!!.showCalendarIcon,
             onCheckedChange = viewModel::updateShowCalendarIcon,
@@ -269,29 +296,119 @@ fun CategoryListScreen(
             info = stringResource(R.string.info_cat_show_delete_button)
         )
 
-        LabelWithInfo(
-            stringResource(R.string.category_settings_type),
-            stringResource(R.string.info_cat_type),
-            modifier = Modifier.padding(top = 8.dp)
-        )
-        var typeExpanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(expanded = typeExpanded, onExpandedChange = { typeExpanded = it }) {
-            OutlinedTextField(
-                value = CATEGORY_TYPES.find { it.first == category!!.categoryType }?.let {
-                    stringResource(it.second)
-                } ?: category!!.categoryType,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.category_settings_type)) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                modifier = Modifier.fillMaxWidth().menuAnchor()
+        val calendarSyncEnabled = viewModel.syncPrefs.enabled
+        val notificationsEnabled = viewModel.syncPrefs.notificationsEnabled
+
+        DisabledSectionWrapper(
+            enabled = calendarSyncEnabled,
+            disabledTooltip = stringResource(R.string.disabled_calendar_sync_tooltip)
+        ) {
+            LabelWithInfo(
+                stringResource(R.string.calendar_sync_rules_label),
+                stringResource(R.string.info_cat_sync_rules),
+                modifier = Modifier.padding(top = 12.dp)
             )
-            ExposedDropdownMenu(expanded = typeExpanded, onDismissRequest = { typeExpanded = false }) {
-                CATEGORY_TYPES.forEach { (type, labelRes) ->
-                    DropdownMenuItem(
-                        text = { Text(stringResource(labelRes)) },
-                        onClick = { viewModel.updateCategoryType(type); typeExpanded = false }
+
+            val existingRuleTypes = syncRules.map { it.ruleType }.toSet()
+            val availableRules = SYNC_RULE_TYPES.filter { it.first !in existingRuleTypes }
+
+            var rulesExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = if (calendarSyncEnabled) rulesExpanded else false,
+                onExpandedChange = { if (calendarSyncEnabled) rulesExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = stringResource(R.string.calendar_sync_rules_add),
+                    onValueChange = {},
+                    readOnly = true,
+                    enabled = calendarSyncEnabled,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = rulesExpanded) },
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(expanded = rulesExpanded, onDismissRequest = { rulesExpanded = false }) {
+                    availableRules.forEach { (type, labelRes) ->
+                        DropdownMenuItem(
+                            text = { Text(stringResource(labelRes)) },
+                            onClick = {
+                                viewModel.addSyncRule(type)
+                                rulesExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            syncRules.forEach { rule ->
+                val labelRes = SYNC_RULE_TYPES.find { it.first == rule.ruleType }?.second
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = if (labelRes != null) stringResource(labelRes) else rule.ruleType,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f).padding(start = 8.dp)
                     )
+                    IconButton(
+                        onClick = { if (calendarSyncEnabled) viewModel.removeSyncRule(rule.id) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Text("✕", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        }
+
+        DisabledSectionWrapper(
+            enabled = notificationsEnabled,
+            disabledTooltip = stringResource(R.string.disabled_notifications_tooltip)
+        ) {
+            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+            CheckboxWithInfo(
+                checked = category!!.notifyOnTime,
+                onCheckedChange = { if (notificationsEnabled) viewModel.updateNotifyOnTime(it) },
+                label = stringResource(R.string.category_settings_notify_on_time),
+                info = stringResource(R.string.info_cat_notify_on_time)
+            )
+
+            if (category!!.notifyOnTime && notificationsEnabled) {
+                LabelWithInfo(
+                    stringResource(R.string.category_settings_notify_minutes_before),
+                    stringResource(R.string.info_cat_notify_minutes_before),
+                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                )
+
+                var minutesExpanded by remember { mutableStateOf(false) }
+                val currentLabel = NOTIFY_MINUTES_OPTIONS.find { it.first == category!!.notifyMinutesBefore }?.second
+                    ?: R.string.notify_15_min
+
+                ExposedDropdownMenuBox(
+                    expanded = minutesExpanded,
+                    onExpandedChange = { minutesExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = stringResource(currentLabel),
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = minutesExpanded) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = minutesExpanded,
+                        onDismissRequest = { minutesExpanded = false }
+                    ) {
+                        NOTIFY_MINUTES_OPTIONS.forEach { (minutes, labelRes) ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(labelRes)) },
+                                onClick = {
+                                    viewModel.updateNotifyMinutesBefore(minutes)
+                                    minutesExpanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -403,5 +520,59 @@ private fun CheckboxWithInfo(checked: Boolean, onCheckedChange: (Boolean) -> Uni
         Text(label, style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.width(4.dp))
         InfoIcon(info)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwitchWithInfo(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    labelOn: String,
+    labelOff: String,
+    info: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(start = 12.dp, top = 4.dp, bottom = 4.dp)
+    ) {
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Spacer(Modifier.width(8.dp))
+        Text(
+            if (checked) labelOn else labelOff,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.width(4.dp))
+        InfoIcon(info)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DisabledSectionWrapper(
+    enabled: Boolean,
+    disabledTooltip: String,
+    content: @Composable () -> Unit
+) {
+    if (enabled) {
+        content()
+    } else {
+        val tooltipState = rememberTooltipState(isPersistent = true)
+        val scope = rememberCoroutineScope()
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(disabledTooltip) } },
+            state = tooltipState,
+            enableUserInput = false
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(0.4f)
+                    .clickable { scope.launch { tooltipState.show() } }
+            ) {
+                content()
+            }
+        }
     }
 }

@@ -28,7 +28,7 @@ class GetWidgetStateUseCase @Inject constructor(
         val categoryBlocks = joins.mapNotNull { join ->
             val category = categoryRepository.getById(join.categoryId) ?: return@mapNotNull null
             var tasks = taskRepository.getByCategory(category.id)
-            tasks = applyTasksWithTimeFirst(tasks, category.tasksWithTimeFirst)
+            tasks = applySorting(tasks, category)
             CategoryBlock(
                 categoryId = category.id,
                 name = category.name,
@@ -54,17 +54,17 @@ class GetWidgetStateUseCase @Inject constructor(
         return WidgetState(config = config, categoryBlocks = categoryBlocks)
     }
 
-    /**
-     * Tasks from DAO are ordered: time ASC, sortOrder ASC (SQLite: nulls first in ASC).
-     * If tasksWithTimeFirst: show tasks with time first → reorder to (withTime, withoutTime).
-     * Else: show tasks without time first → keep (withoutTime, withTime) which is current order.
-     */
-    private fun applyTasksWithTimeFirst(
+    private fun applySorting(
         tasks: List<com.klecer.gottado.data.db.entity.TaskEntity>,
-        tasksWithTimeFirst: Boolean
+        category: com.klecer.gottado.data.db.entity.CategoryEntity
     ): List<com.klecer.gottado.data.db.entity.TaskEntity> {
-        val withTime = tasks.filter { it.scheduledTimeMillis != null }
+        if (!category.autoSortTimedEntries) return tasks
+
+        val withTime = tasks.filter { it.scheduledTimeMillis != null }.let { list ->
+            if (category.timedEntriesAscending) list.sortedBy { it.scheduledTimeMillis }
+            else list.sortedByDescending { it.scheduledTimeMillis }
+        }
         val withoutTime = tasks.filter { it.scheduledTimeMillis == null }
-        return if (tasksWithTimeFirst) withTime + withoutTime else withoutTime + withTime
+        return if (category.tasksWithTimeFirst) withTime + withoutTime else withoutTime + withTime
     }
 }

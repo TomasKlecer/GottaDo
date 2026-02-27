@@ -43,4 +43,8 @@ class CalendarSyncPrefs @Inject constructor(
 
     val frequency: SyncFrequency
         get() = SyncFrequency.fromMinutes(syncFrequencyMinutes)
+
+    var notificationsEnabled: Boolean
+        get() = prefs.getBoolean("notifications_enabled", false)
+        set(value) = prefs.edit().putBoolean("notifications_enabled", value).apply()
 }

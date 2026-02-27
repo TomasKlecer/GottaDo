@@ -2,20 +2,24 @@ package com.klecer.gottado.domain.usecase
 
 import com.klecer.gottado.data.db.entity.TaskEntity
 import com.klecer.gottado.domain.repository.TaskRepository
+import com.klecer.gottado.notification.TaskNotificationScheduler
 import javax.inject.Inject
 
 class SaveTaskUseCase @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val notificationScheduler: TaskNotificationScheduler
 ) {
     /**
      * Insert new task (id = 0) or update existing. Returns the task id.
      */
     suspend operator fun invoke(task: TaskEntity): Long {
-        return if (task.id == 0L) {
+        val id = if (task.id == 0L) {
             taskRepository.insert(task)
         } else {
             taskRepository.update(task)
             task.id
         }
+        notificationScheduler.scheduleForTask(task.copy(id = id))
+        return id
     }
 }
