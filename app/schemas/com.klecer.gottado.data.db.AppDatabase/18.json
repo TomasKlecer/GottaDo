@@ -1,0 +1,767 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 18,
+    "identityHash": "a50cab291c7bbaca6c1725077d705133",
+    "entities": [
+      {
+        "tableName": "widget_config",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`widgetId` INTEGER NOT NULL, `title` TEXT, `subtitle` TEXT, `note` TEXT, `backgroundColor` INTEGER NOT NULL, `backgroundAlpha` REAL NOT NULL, `categoryFontSizeSp` REAL NOT NULL, `recordFontSizeSp` REAL NOT NULL, `defaultTextColor` INTEGER NOT NULL, `reorderHandlePosition` TEXT NOT NULL, `titleColor` INTEGER NOT NULL DEFAULT -1, `subtitleColor` INTEGER NOT NULL DEFAULT -1, `bulletSizeDp` INTEGER NOT NULL DEFAULT 16, `checkboxSizeDp` INTEGER NOT NULL DEFAULT 16, `showTitleOnWidget` INTEGER NOT NULL DEFAULT 1, `buttonsAtBottom` INTEGER NOT NULL DEFAULT 0, `collapsibleCategories` INTEGER NOT NULL DEFAULT 0, `widgetStyle` TEXT NOT NULL DEFAULT 'DEFAULT', `fontFamily` TEXT NOT NULL DEFAULT 'sans-serif', PRIMARY KEY(`widgetId`))",
+        "fields": [
+          {
+            "fieldPath": "widgetId",
+            "columnName": "widgetId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "subtitle",
+            "columnName": "subtitle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "backgroundColor",
+            "columnName": "backgroundColor",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "backgroundAlpha",
+            "columnName": "backgroundAlpha",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryFontSizeSp",
+            "columnName": "categoryFontSizeSp",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordFontSizeSp",
+            "columnName": "recordFontSizeSp",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "defaultTextColor",
+            "columnName": "defaultTextColor",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reorderHandlePosition",
+            "columnName": "reorderHandlePosition",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titleColor",
+            "columnName": "titleColor",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "-1"
+          },
+          {
+            "fieldPath": "subtitleColor",
+            "columnName": "subtitleColor",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "-1"
+          },
+          {
+            "fieldPath": "bulletSizeDp",
+            "columnName": "bulletSizeDp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "16"
+          },
+          {
+            "fieldPath": "checkboxSizeDp",
+            "columnName": "checkboxSizeDp",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "16"
+          },
+          {
+            "fieldPath": "showTitleOnWidget",
+            "columnName": "showTitleOnWidget",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "buttonsAtBottom",
+            "columnName": "buttonsAtBottom",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "collapsibleCategories",
+            "columnName": "collapsibleCategories",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "widgetStyle",
+            "columnName": "widgetStyle",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'DEFAULT'"
+          },
+          {
+            "fieldPath": "fontFamily",
+            "columnName": "fontFamily",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'sans-serif'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "widgetId"
+          ]
+        }
+      },
+      {
+        "tableName": "category",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `sortOrder` INTEGER NOT NULL, `showCheckboxInsteadOfBullet` INTEGER NOT NULL, `tasksWithTimeFirst` INTEGER NOT NULL, `categoryType` TEXT NOT NULL, `color` INTEGER NOT NULL DEFAULT 0, `syncWithCalendarToday` INTEGER NOT NULL DEFAULT 0, `showCalendarIcon` INTEGER NOT NULL DEFAULT 1, `showDeleteButton` INTEGER NOT NULL DEFAULT 0, `notifyOnTime` INTEGER NOT NULL DEFAULT 0, `notifyMinutesBefore` INTEGER NOT NULL DEFAULT 15, `autoSortTimedEntries` INTEGER NOT NULL DEFAULT 1, `timedEntriesAscending` INTEGER NOT NULL DEFAULT 1, `defaultBulletColor` INTEGER NOT NULL DEFAULT 0, `defaultTextColor` INTEGER NOT NULL DEFAULT 0)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sortOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showCheckboxInsteadOfBullet",
+            "columnName": "showCheckboxInsteadOfBullet",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tasksWithTimeFirst",
+            "columnName": "tasksWithTimeFirst",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryType",
+            "columnName": "categoryType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "syncWithCalendarToday",
+            "columnName": "syncWithCalendarToday",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "showCalendarIcon",
+            "columnName": "showCalendarIcon",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "showDeleteButton",
+            "columnName": "showDeleteButton",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "notifyOnTime",
+            "columnName": "notifyOnTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "notifyMinutesBefore",
+            "columnName": "notifyMinutesBefore",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "15"
+          },
+          {
+            "fieldPath": "autoSortTimedEntries",
+            "columnName": "autoSortTimedEntries",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "timedEntriesAscending",
+            "columnName": "timedEntriesAscending",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "defaultBulletColor",
+            "columnName": "defaultBulletColor",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "defaultTextColor",
+            "columnName": "defaultTextColor",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "widget_category_join",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`widgetId` INTEGER NOT NULL, `categoryId` INTEGER NOT NULL, `sortOrder` INTEGER NOT NULL, `visible` INTEGER NOT NULL, PRIMARY KEY(`widgetId`, `categoryId`), FOREIGN KEY(`widgetId`) REFERENCES `widget_config`(`widgetId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`categoryId`) REFERENCES `category`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "widgetId",
+            "columnName": "widgetId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sortOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "visible",
+            "columnName": "visible",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "widgetId",
+            "categoryId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_widget_category_join_widgetId",
+            "unique": false,
+            "columnNames": [
+              "widgetId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_widget_category_join_widgetId` ON `${TABLE_NAME}` (`widgetId`)"
+          },
+          {
+            "name": "index_widget_category_join_categoryId",
+            "unique": false,
+            "columnNames": [
+              "categoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_widget_category_join_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "widget_config",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "widgetId"
+            ],
+            "referencedColumns": [
+              "widgetId"
+            ]
+          },
+          {
+            "table": "category",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "categoryId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "task",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `categoryId` INTEGER NOT NULL, `contentHtml` TEXT NOT NULL, `completed` INTEGER NOT NULL, `bulletColor` INTEGER NOT NULL, `textColor` INTEGER NOT NULL DEFAULT 0, `scheduledTimeMillis` INTEGER, `sortOrder` INTEGER NOT NULL, `createdAtMillis` INTEGER NOT NULL, `updatedAtMillis` INTEGER NOT NULL, `fromCalendarSync` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`categoryId`) REFERENCES `category`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentHtml",
+            "columnName": "contentHtml",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completed",
+            "columnName": "completed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bulletColor",
+            "columnName": "bulletColor",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "textColor",
+            "columnName": "textColor",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "scheduledTimeMillis",
+            "columnName": "scheduledTimeMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sortOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtMillis",
+            "columnName": "createdAtMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtMillis",
+            "columnName": "updatedAtMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromCalendarSync",
+            "columnName": "fromCalendarSync",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_task_categoryId",
+            "unique": false,
+            "columnNames": [
+              "categoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_task_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          },
+          {
+            "name": "index_task_categoryId_sortOrder",
+            "unique": false,
+            "columnNames": [
+              "categoryId",
+              "sortOrder"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_task_categoryId_sortOrder` ON `${TABLE_NAME}` (`categoryId`, `sortOrder`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "category",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "categoryId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "routine",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `categoryId` INTEGER NOT NULL, `name` TEXT, `frequency` TEXT NOT NULL, `scheduleTimeHour` INTEGER NOT NULL, `scheduleTimeMinute` INTEGER NOT NULL, `scheduleDayOfWeek` INTEGER, `scheduleDayOfMonth` INTEGER, `scheduleMonth` INTEGER, `scheduleDay` INTEGER, `visibilityMode` TEXT NOT NULL, `visibilityFrom` INTEGER, `visibilityTo` INTEGER, `incompleteAction` TEXT NOT NULL, `incompleteMoveToCategoryId` INTEGER, `completedAction` TEXT NOT NULL, `completedMoveToCategoryId` INTEGER, FOREIGN KEY(`categoryId`) REFERENCES `category`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "frequency",
+            "columnName": "frequency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleTimeHour",
+            "columnName": "scheduleTimeHour",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleTimeMinute",
+            "columnName": "scheduleTimeMinute",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleDayOfWeek",
+            "columnName": "scheduleDayOfWeek",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scheduleDayOfMonth",
+            "columnName": "scheduleDayOfMonth",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scheduleMonth",
+            "columnName": "scheduleMonth",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scheduleDay",
+            "columnName": "scheduleDay",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "visibilityMode",
+            "columnName": "visibilityMode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "visibilityFrom",
+            "columnName": "visibilityFrom",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "visibilityTo",
+            "columnName": "visibilityTo",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "incompleteAction",
+            "columnName": "incompleteAction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "incompleteMoveToCategoryId",
+            "columnName": "incompleteMoveToCategoryId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "completedAction",
+            "columnName": "completedAction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completedMoveToCategoryId",
+            "columnName": "completedMoveToCategoryId",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_routine_categoryId",
+            "unique": false,
+            "columnNames": [
+              "categoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_routine_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "category",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "categoryId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "trash_entry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `originalCategoryId` INTEGER NOT NULL, `contentHtml` TEXT NOT NULL, `completed` INTEGER NOT NULL, `bulletColor` INTEGER NOT NULL, `scheduledTimeMillis` INTEGER, `sortOrder` INTEGER NOT NULL, `deletedAtMillis` INTEGER NOT NULL, `categoryName` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originalCategoryId",
+            "columnName": "originalCategoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentHtml",
+            "columnName": "contentHtml",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completed",
+            "columnName": "completed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bulletColor",
+            "columnName": "bulletColor",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduledTimeMillis",
+            "columnName": "scheduledTimeMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sortOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deletedAtMillis",
+            "columnName": "deletedAtMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryName",
+            "columnName": "categoryName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_trash_entry_deletedAtMillis",
+            "unique": false,
+            "columnNames": [
+              "deletedAtMillis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_trash_entry_deletedAtMillis` ON `${TABLE_NAME}` (`deletedAtMillis`)"
+          },
+          {
+            "name": "index_trash_entry_originalCategoryId",
+            "unique": false,
+            "columnNames": [
+              "originalCategoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_trash_entry_originalCategoryId` ON `${TABLE_NAME}` (`originalCategoryId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "calendar_dismissed",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `categoryId` INTEGER NOT NULL, `eventTitle` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventTitle",
+            "columnName": "eventTitle",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_calendar_dismissed_categoryId_eventTitle",
+            "unique": true,
+            "columnNames": [
+              "categoryId",
+              "eventTitle"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_calendar_dismissed_categoryId_eventTitle` ON `${TABLE_NAME}` (`categoryId`, `eventTitle`)"
+          }
+        ]
+      },
+      {
+        "tableName": "widget_instance",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`appWidgetId` INTEGER NOT NULL, `presetId` INTEGER NOT NULL, PRIMARY KEY(`appWidgetId`))",
+        "fields": [
+          {
+            "fieldPath": "appWidgetId",
+            "columnName": "appWidgetId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "presetId",
+            "columnName": "presetId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "appWidgetId"
+          ]
+        }
+      },
+      {
+        "tableName": "calendar_sync_rule",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `categoryId` INTEGER NOT NULL, `ruleType` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ruleType",
+            "columnName": "ruleType",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a50cab291c7bbaca6c1725077d705133')"
+    ]
+  }
+}

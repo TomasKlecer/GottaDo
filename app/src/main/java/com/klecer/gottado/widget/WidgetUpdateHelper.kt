@@ -4,6 +4,9 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.TypefaceSpan
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
@@ -61,7 +64,7 @@ object WidgetUpdateHelper {
         val title = config.title?.takeIf { it.isNotBlank() }
         if (title != null && config.showTitleOnWidget) {
             rv.setViewVisibility(R.id.widget_title, View.VISIBLE)
-            rv.setTextViewText(R.id.widget_title, title)
+            rv.setTextViewText(R.id.widget_title, styledText(title, config.fontFamily))
             rv.setTextColor(R.id.widget_title, config.titleColor)
         } else {
             rv.setViewVisibility(R.id.widget_title, View.GONE)
@@ -70,7 +73,7 @@ object WidgetUpdateHelper {
         val subtitle = config.subtitle?.takeIf { it.isNotBlank() }
         if (subtitle != null) {
             rv.setViewVisibility(R.id.widget_subtitle, View.VISIBLE)
-            rv.setTextViewText(R.id.widget_subtitle, subtitle)
+            rv.setTextViewText(R.id.widget_subtitle, styledText(subtitle, config.fontFamily))
             rv.setTextColor(R.id.widget_subtitle, config.subtitleColor)
         } else {
             rv.setViewVisibility(R.id.widget_subtitle, View.GONE)
@@ -153,6 +156,13 @@ object WidgetUpdateHelper {
         } catch (inner: Throwable) {
             Log.e(TAG, "showError() also failed", inner)
         }
+    }
+
+    private fun styledText(text: CharSequence, fontFamily: String): CharSequence {
+        if (fontFamily == "sans-serif") return text
+        val spannable = SpannableString(text)
+        spannable.setSpan(TypefaceSpan(fontFamily), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannable
     }
 
     private fun adjustAlpha(color: Int, alpha: Float): Int {

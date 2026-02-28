@@ -4,6 +4,7 @@ package com.klecer.gottado.ui.screen.settings
 
 import android.Manifest
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -29,7 +30,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
@@ -55,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.klecer.gottado.R
@@ -261,7 +266,83 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         }
 
         Spacer(Modifier.size(24.dp))
+        BackupRestoreSection(viewModel)
+
+        Spacer(Modifier.size(24.dp))
         ColorPickersSection(viewModel)
+    }
+}
+
+@Composable
+private fun BackupRestoreSection(viewModel: SettingsViewModel) {
+    val context = LocalContext.current
+    val exportImportMessage by viewModel.exportImportMessage.collectAsState()
+    var showImportWarning by remember { mutableStateOf(false) }
+    var pendingImportUri by remember { mutableStateOf<android.net.Uri?>(null) }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri -> if (uri != null) viewModel.exportData(uri) }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            pendingImportUri = uri
+            showImportWarning = true
+        }
+    }
+
+    exportImportMessage?.let { msg ->
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        viewModel.clearExportImportMessage()
+    }
+
+    SettingsSectionHeader(
+        title = stringResource(R.string.settings_backup_section),
+        infoText = stringResource(R.string.info_settings_backup)
+    )
+    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Button(
+            onClick = { exportLauncher.launch("gottado_backup.json") },
+            modifier = Modifier.weight(1f)
+        ) { Text(stringResource(R.string.settings_export_button)) }
+
+        Button(
+            onClick = { importLauncher.launch(arrayOf("application/json", "*/*")) },
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        ) { Text(stringResource(R.string.settings_import_button)) }
+    }
+
+    if (showImportWarning) {
+        AlertDialog(
+            onDismissRequest = { showImportWarning = false },
+            title = { Text(stringResource(R.string.settings_import_warning_title)) },
+            text = { Text(stringResource(R.string.settings_import_warning_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showImportWarning = false
+                    pendingImportUri?.let { viewModel.importData(it) }
+                    pendingImportUri = null
+                }) {
+                    Text(
+                        stringResource(R.string.settings_import_confirm),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showImportWarning = false }) {
+                    Text(stringResource(R.string.settings_import_cancel))
+                }
+            }
+        )
     }
 }
 

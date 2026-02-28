@@ -359,6 +359,13 @@ fun WidgetListScreen(
 
         // ── Layout ──
         CollapsibleSection(stringResource(R.string.section_widget_layout), icon = Icons.Default.ViewModule) {
+            LabelWithInfo(stringResource(R.string.widget_font_label), stringResource(R.string.info_widget_font))
+            FontFamilyDropdown(
+                current = config!!.fontFamily,
+                onChange = { viewModel.updateFontFamily(it) }
+            )
+            Spacer(Modifier.height(12.dp))
+
             SwitchWithInfo(
                 checked = config!!.buttonsAtBottom,
                 onCheckedChange = { viewModel.updateButtonsAtBottom(it) },
@@ -535,5 +542,45 @@ private fun SwitchWithInfo(
         )
         Spacer(Modifier.width(4.dp))
         InfoIcon(info)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FontFamilyDropdown(current: String, onChange: (String) -> Unit) {
+    val fonts = listOf(
+        "sans-serif" to stringResource(R.string.widget_font_sans_serif),
+        "serif" to stringResource(R.string.widget_font_serif),
+        "monospace" to stringResource(R.string.widget_font_monospace),
+        "sans-serif-condensed" to stringResource(R.string.widget_font_sans_serif_condensed),
+        "cursive" to stringResource(R.string.widget_font_cursive)
+    )
+    var expanded by remember { mutableStateOf(false) }
+    val currentLabel = fonts.firstOrNull { it.first == current }?.second ?: current
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+        OutlinedTextField(
+            value = currentLabel,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier.menuAnchor().fillMaxWidth()
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            fonts.forEach { (family, label) ->
+                DropdownMenuItem(
+                    text = { Text(label, fontFamily = when (family) {
+                        "serif" -> androidx.compose.ui.text.font.FontFamily.Serif
+                        "monospace" -> androidx.compose.ui.text.font.FontFamily.Monospace
+                        "cursive" -> androidx.compose.ui.text.font.FontFamily.Cursive
+                        "sans-serif-condensed" -> androidx.compose.ui.text.font.FontFamily.SansSerif
+                        else -> androidx.compose.ui.text.font.FontFamily.Default
+                    }) },
+                    onClick = {
+                        onChange(family)
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }

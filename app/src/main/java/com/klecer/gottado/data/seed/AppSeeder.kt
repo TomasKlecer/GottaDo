@@ -36,6 +36,7 @@ class AppSeeder @Inject constructor(
         val RED = Color.parseColor("#FFD32F2F")
         val ORANGE = Color.parseColor("#FFFF9800")
         val BLUE = Color.parseColor("#FF1976D2")
+        val GREEN = Color.parseColor("#FF388E3C")
     }
 
     suspend fun seedIfNeeded(context: Context) {
@@ -69,16 +70,23 @@ class AppSeeder @Inject constructor(
             defaultBulletColor = RED
         ))
 
+        val weeklyId = categoryDao.insert(CategoryEntity(
+            name = "WEEKLY",
+            sortOrder = 3,
+            showCheckboxInsteadOfBullet = true,
+            defaultBulletColor = GREEN
+        ))
+
         val somedayId = categoryDao.insert(CategoryEntity(
             name = "SOMEDAY",
-            sortOrder = 3,
+            sortOrder = 4,
             showCheckboxInsteadOfBullet = true,
             defaultBulletColor = ORANGE
         ))
 
         val notesId = categoryDao.insert(CategoryEntity(
             name = "NOTES",
-            sortOrder = 4,
+            sortOrder = 5,
             showCheckboxInsteadOfBullet = false,
             defaultBulletColor = BLUE
         ))
@@ -97,6 +105,18 @@ class AppSeeder @Inject constructor(
             incompleteMoveToCategoryId = todayId,
             completedAction = RoutineTaskAction.MOVE,
             completedMoveToCategoryId = todayId
+        ))
+
+        routineDao.insert(RoutineEntity(
+            categoryId = weeklyId,
+            name = "Uncheck entries weekly",
+            frequency = RoutineFrequency.WEEKLY,
+            scheduleTimeHour = 23,
+            scheduleTimeMinute = 59,
+            scheduleDayOfWeek = java.util.Calendar.SUNDAY,
+            visibilityMode = RoutineVisibilityMode.VISIBLE,
+            incompleteAction = RoutineTaskAction.UNCOMPLETE,
+            completedAction = RoutineTaskAction.UNCOMPLETE
         ))
 
         routineDao.insert(RoutineEntity(
@@ -130,7 +150,7 @@ class AppSeeder @Inject constructor(
             buttonsAtBottom = true
         ))
 
-        val categoryOrder = listOf(todayId, tomorrowId, dailyId, somedayId, notesId)
+        val categoryOrder = listOf(todayId, dailyId, tomorrowId, somedayId, notesId)
         categoryOrder.forEachIndexed { index, catId ->
             widgetCategoryJoinDao.insert(WidgetCategoryJoinEntity(
                 widgetId = presetId,
@@ -144,7 +164,8 @@ class AppSeeder @Inject constructor(
         seedEntries(todayId, RED, now, listOf(
             "Your tasks for today",
             "Calendar events sync here automatically",
-            "To enable sync: open ⚙ Settings in the app → enable Calendar sync"
+            "To enable sync: open ⚙ Settings in the app → enable Calendar sync",
+            "Timed entries trigger notifications — enable in ⚙ Settings → Notifications, then per category"
         ))
         seedEntries(tomorrowId, ORANGE, now, listOf(
             "Tasks for tomorrow",
@@ -156,9 +177,13 @@ class AppSeeder @Inject constructor(
             "Checked entries automatically uncheck every day",
             "Add tasks you repeat daily"
         ))
+        seedEntries(weeklyId, GREEN, now, listOf(
+            "Weekly recurring tasks",
+            "Checked entries automatically uncheck every Sunday at 23:59",
+            "Add tasks you repeat each week"
+        ))
         seedEntries(somedayId, ORANGE, now, listOf(
-            "Tasks with no specific date",
-            "Move them to TODAY when you're ready"
+            "Category for tasks you SURELY will finish... someday."
         ))
         seedEntries(notesId, BLUE, now, listOf(
             "Welcome to GottaDo!",
@@ -170,7 +195,7 @@ class AppSeeder @Inject constructor(
             "<b>Adding entries:</b> tap a category name",
             "<b>Editing entries:</b> tap the entry text",
             "<b>Completing:</b> tap the checkbox or bullet",
-            "<b>Deleting:</b> enable delete button in category settings",
+            "<b>Deleting:</b> via Edit, or enable delete button in category settings",
             "<b>Categories:</b> manage in the Categories tab",
             "<b>Calendar sync:</b> enable in ⚙ Settings (in app) → set sync rules per category",
             "<b>Notifications:</b> enable in ⚙ Settings (in app) → enable per category",

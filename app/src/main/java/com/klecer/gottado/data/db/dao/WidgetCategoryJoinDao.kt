@@ -11,6 +11,9 @@ import com.klecer.gottado.data.db.entity.WidgetCategoryJoinEntity
 @Dao
 interface WidgetCategoryJoinDao {
 
+    @Query("SELECT * FROM widget_category_join")
+    suspend fun getAll(): List<WidgetCategoryJoinEntity>
+
     @Query("""
         SELECT c.* FROM category c
         INNER JOIN widget_category_join wcj ON wcj.categoryId = c.id
@@ -45,4 +48,7 @@ interface WidgetCategoryJoinDao {
 
     @Query("DELETE FROM widget_category_join WHERE categoryId = :categoryId")
     suspend fun deleteAllForCategory(categoryId: Long)
+
+    @Query("DELETE FROM widget_category_join")
+    suspend fun deleteAll()
 }

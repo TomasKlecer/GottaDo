@@ -23,4 +23,10 @@ interface RoutineDao {
 
     @Query("DELETE FROM routine WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(entities: List<RoutineEntity>)
+
+    @Query("DELETE FROM routine")
+    suspend fun deleteAll()
 }

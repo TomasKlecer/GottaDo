@@ -37,7 +37,7 @@ import com.klecer.gottado.data.db.dao.WidgetInstanceDao
         WidgetInstanceEntity::class,
         CalendarSyncRuleEntity::class
     ],
-    version = 16,
+    version = 18,
     exportSchema = true
 )
 @TypeConverters(AppConverters::class)
@@ -163,6 +163,18 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE category ADD COLUMN defaultBulletColor INTEGER NOT NULL DEFAULT 0")
                 db.execSQL("ALTER TABLE category ADD COLUMN defaultTextColor INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        val MIGRATION_16_17 = object : Migration(16, 17) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE widget_config ADD COLUMN widgetStyle TEXT NOT NULL DEFAULT 'DEFAULT'")
+            }
+        }
+
+        val MIGRATION_17_18 = object : Migration(17, 18) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE widget_config ADD COLUMN fontFamily TEXT NOT NULL DEFAULT 'sans-serif'")
             }
         }
     }

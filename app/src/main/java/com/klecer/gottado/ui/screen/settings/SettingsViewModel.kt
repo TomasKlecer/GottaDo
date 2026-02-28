@@ -3,6 +3,7 @@ package com.klecer.gottado.ui.screen.settings
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
@@ -13,6 +14,7 @@ import com.klecer.gottado.calendar.CalendarSyncManager
 import com.klecer.gottado.calendar.CalendarSyncPrefs
 import com.klecer.gottado.calendar.CalendarSyncScheduler
 import com.klecer.gottado.calendar.SyncFrequency
+import com.klecer.gottado.data.backup.BackupManager
 import com.klecer.gottado.ui.color.ColorPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -45,7 +47,8 @@ class SettingsViewModel @Inject constructor(
     private val syncPrefs: CalendarSyncPrefs,
     private val syncScheduler: CalendarSyncScheduler,
     private val syncManager: CalendarSyncManager,
-    val colorPrefs: ColorPrefs
+    val colorPrefs: ColorPrefs,
+    private val backupManager: BackupManager
 ) : ViewModel() {
 
     private val _colorPalettes = MutableStateFlow(loadPalettes())
@@ -124,6 +127,33 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             syncManager.sync()
             _state.value = _state.value.copy(lastSyncMillis = syncPrefs.lastSyncMillis)
+        }
+    }
+
+    private val _exportImportMessage = MutableStateFlow<String?>(null)
+    val exportImportMessage: StateFlow<String?> = _exportImportMessage.asStateFlow()
+
+    fun clearExportImportMessage() { _exportImportMessage.value = null }
+
+    fun exportData(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                backupManager.exportToUri(appContext, uri)
+                _exportImportMessage.value = "Export successful"
+            } catch (e: Exception) {
+                _exportImportMessage.value = "Export failed: ${e.message}"
+            }
+        }
+    }
+
+    fun importData(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                backupManager.importFromUri(appContext, uri)
+                _exportImportMessage.value = "Import successful"
+            } catch (e: Exception) {
+                _exportImportMessage.value = "Import failed: ${e.message}"
+            }
         }
     }
 

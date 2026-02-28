@@ -325,4 +325,27 @@
     <string name="info_settings_calendar_sync">Verbinden Sie sich mit Google Kalender und importieren Sie automatisch Ereignisse basierend auf Synchronisationsregeln in Ihre Kategorien. Stellen Sie die Häufigkeit ein oder starten Sie eine manuelle Synchronisation.</string>
     <string name="info_settings_notifications">Aktivieren Sie Benachrichtigungen, um Erinnerungen vor geplanten Aufgaben zu erhalten. Konfigurieren Sie das Timing pro Kategorie in den Kategorieeinstellungen.</string>
     <string name="info_settings_color_pickers">Passen Sie die Standard-Farbpaletten an, die in den Farbauswahlen in der gesamten App verfügbar sind.</string>
+
+    <string name="widget_style_label">Widget-Stil</string>
+    <string name="info_widget_style">Visueller Stil des Widgets. NOTIZBLOCK und PAPIERNOTIZ überschreiben die Hintergrundfarb-Einstellungen.</string>
+    <string name="widget_style_default">Standard</string>
+    <string name="widget_style_notepad">Notizblock</string>
+    <string name="widget_style_paper_note">Papiernotiz</string>
+
+    <string name="settings_backup_section">Sicherung &amp; Wiederherstellung</string>
+    <string name="info_settings_backup">Exportieren Sie alle App-Daten (Kategorien, Einträge, Widgets, Verlauf) in eine Datei oder importieren Sie aus einem früheren Export.</string>
+    <string name="settings_export_button">Daten exportieren</string>
+    <string name="settings_import_button">Daten importieren</string>
+    <string name="settings_import_warning_title">Alle Daten überschreiben?</string>
+    <string name="settings_import_warning_message">Der Import ersetzt ALLE aktuellen Kategorien, Einträge, Widget-Vorlagen, Routinen und den Verlauf. Dies kann nicht rückgängig gemacht werden.\n\nVerwenden Sie dies nur zur Wiederherstellung einer Sicherung oder zur Datenübertragung auf ein neues Gerät.</string>
+    <string name="settings_import_confirm">Importieren und überschreiben</string>
+    <string name="settings_import_cancel">Abbrechen</string>
+
+    <string name="widget_font_label">Schriftart</string>
+    <string name="info_widget_font">Schriftart für den gesamten Text im Widget.</string>
+    <string name="widget_font_sans_serif">Sans-Serif (Standard)</string>
+    <string name="widget_font_serif">Serif</string>
+    <string name="widget_font_monospace">Monospace</string>
+    <string name="widget_font_sans_serif_condensed">Sans-Serif schmal</string>
+    <string name="widget_font_cursive">Kursiv</string>
 </resources>

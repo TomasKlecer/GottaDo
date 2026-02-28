@@ -8,6 +8,9 @@ import com.klecer.gottado.data.db.entity.CalendarSyncRuleEntity
 @Dao
 interface CalendarSyncRuleDao {
 
+    @Query("SELECT * FROM calendar_sync_rule")
+    suspend fun getAll(): List<CalendarSyncRuleEntity>
+
     @Query("SELECT * FROM calendar_sync_rule WHERE categoryId = :categoryId")
     suspend fun getRulesForCategory(categoryId: Long): List<CalendarSyncRuleEntity>
 
@@ -22,4 +25,7 @@ interface CalendarSyncRuleDao {
 
     @Query("DELETE FROM calendar_sync_rule WHERE categoryId = :categoryId")
     suspend fun deleteAllForCategory(categoryId: Long)
+
+    @Query("DELETE FROM calendar_sync_rule")
+    suspend fun deleteAll()
 }

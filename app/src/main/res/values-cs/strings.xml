@@ -325,4 +325,27 @@
     <string name="info_settings_calendar_sync">Připojte se ke Google Kalendáři a automaticky importujte události do kategorií podle pravidel synchronizace. Nastavte frekvenci nebo spusťte ruční synchronizaci.</string>
     <string name="info_settings_notifications">Povolte notifikace pro připomínky před naplánovanými záznamy. Časování nastavte u jednotlivých kategorií.</string>
     <string name="info_settings_color_pickers">Přizpůsobte výchozí palety barev dostupné ve výběru barev v celé aplikaci.</string>
+
+    <string name="widget_style_label">Styl widgetu</string>
+    <string name="info_widget_style">Vizuální styl widgetu. Styly POZNÁMKOVÝ BLOK a PAPÍROVÁ POZNÁMKA přepíší nastavení barvy pozadí.</string>
+    <string name="widget_style_default">Výchozí</string>
+    <string name="widget_style_notepad">Poznámkový blok</string>
+    <string name="widget_style_paper_note">Papírová poznámka</string>
+
+    <string name="settings_backup_section">Záloha a obnova</string>
+    <string name="info_settings_backup">Exportuje veškerá data aplikace (kategorie, záznamy, widgety, historii) do souboru, nebo importuje z předchozího exportu.</string>
+    <string name="settings_export_button">Exportovat data</string>
+    <string name="settings_import_button">Importovat data</string>
+    <string name="settings_import_warning_title">Přepsat všechna data?</string>
+    <string name="settings_import_warning_message">Import nahradí VŠECHNY aktuální kategorie, záznamy, šablony widgetů, rutiny a historii. Tuto akci nelze vrátit zpět.\n\nPoužijte pouze pro obnovení zálohy nebo přenos dat do nového zařízení.</string>
+    <string name="settings_import_confirm">Importovat a přepsat</string>
+    <string name="settings_import_cancel">Zrušit</string>
+
+    <string name="widget_font_label">Písmo</string>
+    <string name="info_widget_font">Písmo použité pro veškerý text ve widgetu.</string>
+    <string name="widget_font_sans_serif">Sans-serif (výchozí)</string>
+    <string name="widget_font_serif">Serif</string>
+    <string name="widget_font_monospace">Monospace</string>
+    <string name="widget_font_sans_serif_condensed">Sans-serif zúžené</string>
+    <string name="widget_font_cursive">Kurzíva</string>
 </resources>

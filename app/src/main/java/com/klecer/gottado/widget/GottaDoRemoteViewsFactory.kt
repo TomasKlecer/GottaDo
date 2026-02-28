@@ -6,6 +6,9 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.TypefaceSpan
 import android.util.Log
 import android.widget.RemoteViews
 import com.klecer.gottado.R
@@ -120,7 +123,7 @@ class GottaDoRemoteViewsFactory(
         collapsed: Boolean = false
     ): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_item_category)
-        rv.setTextViewText(R.id.widget_category_name, block.name)
+        rv.setTextViewText(R.id.widget_category_name, styledText(block.name, config.fontFamily))
         rv.setFloat(R.id.widget_category_name, "setTextSize", config.categoryFontSizeSp)
         val catColor = if (block.color != 0) block.color else config.defaultTextColor
         rv.setTextColor(R.id.widget_category_name, catColor)
@@ -166,7 +169,7 @@ class GottaDoRemoteViewsFactory(
     ): RemoteViews {
         val layoutId = if (showCheckbox) R.layout.widget_item_record_checkbox else R.layout.widget_item_record
         val rv = RemoteViews(context.packageName, layoutId)
-        rv.setTextViewText(R.id.widget_record_text, stripHtmlForWidget(task.contentHtml))
+        rv.setTextViewText(R.id.widget_record_text, styledText(stripHtmlForWidget(task.contentHtml), config.fontFamily))
         rv.setFloat(R.id.widget_record_text, "setTextSize", config.recordFontSizeSp)
         val baseTextColor = if (task.textColor != 0) task.textColor else config.defaultTextColor
         val textColor = if (task.completed) Color.GRAY else baseTextColor
@@ -343,6 +346,13 @@ class GottaDoRemoteViewsFactory(
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy()")
+    }
+
+    private fun styledText(text: CharSequence, fontFamily: String): CharSequence {
+        if (fontFamily == "sans-serif") return text
+        val spannable = SpannableString(text)
+        spannable.setSpan(TypefaceSpan(fontFamily), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return spannable
     }
 
     companion object {

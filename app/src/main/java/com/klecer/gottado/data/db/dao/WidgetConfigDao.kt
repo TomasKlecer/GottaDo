@@ -22,4 +22,7 @@ interface WidgetConfigDao {
 
     @Query("DELETE FROM widget_config WHERE widgetId = :widgetId")
     suspend fun deleteByWidgetId(widgetId: Int)
+
+    @Query("DELETE FROM widget_config")
+    suspend fun deleteAll()
 }

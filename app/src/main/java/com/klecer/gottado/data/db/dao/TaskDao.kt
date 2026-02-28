@@ -9,6 +9,9 @@ import com.klecer.gottado.data.db.entity.TaskEntity
 @Dao
 interface TaskDao {
 
+    @Query("SELECT * FROM task")
+    suspend fun getAll(): List<TaskEntity>
+
     @Query("SELECT * FROM task WHERE id = :id")
     suspend fun getById(id: Long): TaskEntity?
 
@@ -55,4 +58,7 @@ interface TaskDao {
 
     @Query("DELETE FROM task WHERE categoryId = :categoryId")
     suspend fun deleteByCategoryId(categoryId: Long)
+
+    @Query("DELETE FROM task")
+    suspend fun deleteAll()
 }

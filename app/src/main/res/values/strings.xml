@@ -327,4 +327,27 @@
     <string name="info_settings_calendar_sync">Connect to Google Calendar and automatically import events into your categories based on sync rules. Set the sync frequency or trigger a manual sync.</string>
     <string name="info_settings_notifications">Enable notifications to get reminders before scheduled task entries. Configure timing per category in category settings.</string>
     <string name="info_settings_color_pickers">Customize the default color palettes available in color pickers throughout the app.</string>
+
+    <string name="widget_style_label">Widget style</string>
+    <string name="info_widget_style">Visual style of the widget. NOTEPAD and PAPER NOTE styles override background color settings.</string>
+    <string name="widget_style_default">Default</string>
+    <string name="widget_style_notepad">Notepad</string>
+    <string name="widget_style_paper_note">Paper note</string>
+
+    <string name="settings_backup_section">Backup &amp; Restore</string>
+    <string name="info_settings_backup">Export all app data (categories, entries, widgets, history) to a file, or import from a previous export.</string>
+    <string name="settings_export_button">Export data</string>
+    <string name="settings_import_button">Import data</string>
+    <string name="settings_import_warning_title">Overwrite all data?</string>
+    <string name="settings_import_warning_message">Importing will replace ALL current categories, entries, widget templates, routines and history. This cannot be undone.\n\nUse this only to restore a backup or transfer data to a new device.</string>
+    <string name="settings_import_confirm">Import and overwrite</string>
+    <string name="settings_import_cancel">Cancel</string>
+
+    <string name="widget_font_label">Font</string>
+    <string name="info_widget_font">Font used for all text in the widget.</string>
+    <string name="widget_font_sans_serif">Sans-serif (default)</string>
+    <string name="widget_font_serif">Serif</string>
+    <string name="widget_font_monospace">Monospace</string>
+    <string name="widget_font_sans_serif_condensed">Sans-serif condensed</string>
+    <string name="widget_font_cursive">Cursive</string>
 </resources>

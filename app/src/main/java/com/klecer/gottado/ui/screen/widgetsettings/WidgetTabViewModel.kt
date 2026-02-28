@@ -252,6 +252,16 @@ class WidgetTabViewModel @Inject constructor(
         autoSave()
     }
 
+    fun updateWidgetStyle(style: String) {
+        _config.value = _config.value?.copy(widgetStyle = style)
+        autoSave()
+    }
+
+    fun updateFontFamily(fontFamily: String) {
+        _config.value = _config.value?.copy(fontFamily = fontFamily)
+        autoSave()
+    }
+
     fun setCategoryVisible(categoryId: Long, visible: Boolean) {
         val wId = _selectedWidgetId.value ?: return
         viewModelScope.launch {

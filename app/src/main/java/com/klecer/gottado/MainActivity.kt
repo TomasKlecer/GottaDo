@@ -53,7 +53,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val navigateTo = intent?.getStringExtra("navigate_to")
+        val navigateTo = intent?.getStringExtra("navigate_to")?.takeIf { route ->
+            route.startsWith("widget_") || route.startsWith("category_") ||
+                route == "settings" || route == "trash" || route == "record_edit_options"
+        }
         setContent {
             GottaDoTheme {
                 MainScaffold(initialRoute = navigateTo)
