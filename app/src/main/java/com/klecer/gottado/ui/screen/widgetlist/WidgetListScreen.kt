@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -222,57 +223,56 @@ fun WidgetListScreen(
         val assignedIds = categoryJoins.map { it.join.categoryId }.toSet()
         val availableToAdd = allCategories.filter { it.id !in assignedIds }
 
-        LabelWithInfo(
+        CollapsibleSection(
             stringResource(R.string.widget_settings_categories),
-            stringResource(R.string.info_widget_categories),
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        categoryJoins.forEach { item ->
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                    IconButton(
-                        onClick = { viewModel.setCategoryVisible(item.join.categoryId, !item.join.visible) },
-                        modifier = Modifier.size(36.dp)
-                    ) {
-                        Icon(
-                            if (item.join.visible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = null,
-                            tint = if (item.join.visible) MaterialTheme.colorScheme.primary
-                                   else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
-                            modifier = Modifier.size(20.dp)
-                        )
+            icon = Icons.AutoMirrored.Filled.ViewList,
+            defaultExpanded = true
+        ) {
+            categoryJoins.forEach { item ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                        IconButton(
+                            onClick = { viewModel.setCategoryVisible(item.join.categoryId, !item.join.visible) },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                if (item.join.visible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = null,
+                                tint = if (item.join.visible) MaterialTheme.colorScheme.primary
+                                       else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(Modifier.width(4.dp))
+                        Text(item.categoryName)
                     }
-                    Spacer(Modifier.width(4.dp))
-                    Text(item.categoryName)
-                }
-                Row {
-                    TextButton(onClick = { viewModel.moveCategoryUp(item.join.categoryId) }) { Text("↑") }
-                    TextButton(onClick = { viewModel.moveCategoryDown(item.join.categoryId) }) { Text("↓") }
-                    TextButton(onClick = { viewModel.removeCategoryFromWidget(item.join.categoryId) }) {
-                        Text(stringResource(R.string.widget_settings_remove))
+                    Row {
+                        TextButton(onClick = { viewModel.moveCategoryUp(item.join.categoryId) }) { Text("↑") }
+                        TextButton(onClick = { viewModel.moveCategoryDown(item.join.categoryId) }) { Text("↓") }
+                        TextButton(onClick = { viewModel.removeCategoryFromWidget(item.join.categoryId) }) {
+                            Text(stringResource(R.string.widget_settings_remove))
+                        }
                     }
                 }
             }
-        }
-        if (availableToAdd.isNotEmpty()) {
-            Text(
-                stringResource(R.string.widget_settings_add_category),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            availableToAdd.forEach { cat ->
-                TextButton(
-                    onClick = { viewModel.addCategoryToWidget(cat.id) },
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("+ ${cat.name}") }
+            if (availableToAdd.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.widget_settings_add_category),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                availableToAdd.forEach { cat ->
+                    TextButton(
+                        onClick = { viewModel.addCategoryToWidget(cat.id) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("+ ${cat.name}") }
+                }
             }
         }
-
-        Spacer(Modifier.height(8.dp))
 
         // ── Colors ──
         val bgColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_WIDGET_BG)

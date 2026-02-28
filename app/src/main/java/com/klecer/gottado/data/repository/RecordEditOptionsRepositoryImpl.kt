@@ -14,10 +14,10 @@ class RecordEditOptionsRepositoryImpl @Inject constructor(
     override fun get(): RecordEditOptions = RecordEditOptions(
         showRichText = prefs.getBoolean(KEY_RICH_TEXT, true),
         showTimeField = prefs.getBoolean(KEY_TIME, true),
-        showCategoryDropdown = prefs.getBoolean(KEY_CATEGORY, true),
+        showCategoryDropdown = prefs.getBoolean(KEY_CATEGORY, false),
         showBulletColor = prefs.getBoolean(KEY_BULLET_COLOR, true),
         showTextColor = prefs.getBoolean(KEY_TEXT_COLOR, true),
-        useUnifiedColorPicker = prefs.getBoolean(KEY_UNIFIED_COLOR_PICKER, true),
+        useUnifiedColorPicker = prefs.getBoolean(KEY_UNIFIED_COLOR_PICKER, false),
         showCompletedCheckbox = prefs.getBoolean(KEY_COMPLETED_CHECKBOX, false)
     )
 

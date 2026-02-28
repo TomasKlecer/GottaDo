@@ -223,6 +223,16 @@ class CategoryTabViewModel @Inject constructor(
         }
     }
 
+    fun updateDefaultBulletColor(color: Int) {
+        _category.value = _category.value?.copy(defaultBulletColor = color)
+        autoSave()
+    }
+
+    fun updateDefaultTextColor(color: Int) {
+        _category.value = _category.value?.copy(defaultTextColor = color)
+        autoSave()
+    }
+
     fun addSyncRule(ruleType: String) {
         val catId = _selectedCategoryId.value ?: return
         if (_syncRules.value.any { it.ruleType == ruleType }) return

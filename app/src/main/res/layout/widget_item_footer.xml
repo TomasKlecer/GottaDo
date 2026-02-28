@@ -28,14 +28,14 @@
         android:scaleType="fitCenter"
         android:contentDescription="@null" />
 
-    <TextView
+    <ImageView
         android:id="@+id/widget_footer_reorder"
         android:layout_width="0dp"
         android:layout_height="36dp"
         android:layout_weight="1"
         android:padding="8dp"
-        android:text="@string/widget_reorder"
-        android:textSize="18sp"
-        android:gravity="center" />
+        android:src="@drawable/ic_reorder"
+        android:scaleType="fitCenter"
+        android:contentDescription="@null" />
 
 </LinearLayout>

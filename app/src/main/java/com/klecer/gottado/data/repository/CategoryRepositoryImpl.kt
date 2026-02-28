@@ -33,7 +33,9 @@ class CategoryRepositoryImpl @Inject constructor(
             notifyOnTime = entity.notifyOnTime,
             notifyMinutesBefore = entity.notifyMinutesBefore,
             autoSortTimedEntries = entity.autoSortTimedEntries,
-            timedEntriesAscending = entity.timedEntriesAscending
+            timedEntriesAscending = entity.timedEntriesAscending,
+            defaultBulletColor = entity.defaultBulletColor,
+            defaultTextColor = entity.defaultTextColor
         )
     }
 

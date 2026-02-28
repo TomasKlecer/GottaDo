@@ -8,9 +8,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.klecer.gottado.calendar.CalendarSyncScheduler
+import com.klecer.gottado.data.seed.AppSeeder
 import com.klecer.gottado.notification.NotificationHelper
 import com.klecer.gottado.worker.RoutineWorker
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -23,6 +27,9 @@ class GottaDoApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var calendarSyncScheduler: CalendarSyncScheduler
 
+    @Inject
+    lateinit var appSeeder: AppSeeder
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
@@ -31,6 +38,9 @@ class GottaDoApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         NotificationHelper.ensureChannel(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            appSeeder.seedIfNeeded(this@GottaDoApplication)
+        }
         enqueueRoutineWorker()
         calendarSyncScheduler.scheduleFromPrefs()
     }

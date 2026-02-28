@@ -271,7 +271,9 @@ class GottaDoRemoteViewsFactory(
     private fun buildFooter(widgetId: Int): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_item_footer)
         val textColor = state?.config?.defaultTextColor ?: Color.WHITE
-        rv.setTextColor(R.id.widget_footer_reorder, textColor)
+        rv.setInt(R.id.widget_footer_reorder, "setColorFilter", textColor)
+        rv.setInt(R.id.widget_footer_open_app, "setColorFilter", textColor)
+        rv.setInt(R.id.widget_footer_picker, "setColorFilter", textColor)
         val openFillIn = Intent().apply {
             putExtra("action", "OPEN_APP")
             putExtra(WidgetIntents.EXTRA_WIDGET_ID, widgetId)

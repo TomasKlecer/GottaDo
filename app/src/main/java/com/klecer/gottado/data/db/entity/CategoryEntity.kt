@@ -27,5 +27,9 @@ data class CategoryEntity(
     @ColumnInfo(defaultValue = "1")
     val autoSortTimedEntries: Boolean = true,
     @ColumnInfo(defaultValue = "1")
-    val timedEntriesAscending: Boolean = true
+    val timedEntriesAscending: Boolean = true,
+    @ColumnInfo(defaultValue = "0")
+    val defaultBulletColor: Int = 0,
+    @ColumnInfo(defaultValue = "0")
+    val defaultTextColor: Int = 0
 )

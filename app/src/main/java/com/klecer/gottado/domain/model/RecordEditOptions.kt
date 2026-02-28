@@ -10,6 +10,6 @@ data class RecordEditOptions(
     val showCategoryDropdown: Boolean = false,
     val showBulletColor: Boolean = true,
     val showTextColor: Boolean = true,
-    val useUnifiedColorPicker: Boolean = true,
+    val useUnifiedColorPicker: Boolean = false,
     val showCompletedCheckbox: Boolean = false
 )

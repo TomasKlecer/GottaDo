@@ -7,6 +7,7 @@ import com.klecer.gottado.data.db.entity.TaskEntity
 import com.klecer.gottado.domain.repository.TaskRepository
 import com.klecer.gottado.domain.usecase.DeleteTaskUseCase
 import com.klecer.gottado.domain.usecase.GetCategoriesUseCase
+import com.klecer.gottado.domain.usecase.GetCategoryUseCase
 import com.klecer.gottado.domain.usecase.GetTaskUseCase
 import com.klecer.gottado.domain.usecase.MoveTaskToCategoryUseCase
 import com.klecer.gottado.domain.usecase.SaveTaskUseCase
@@ -37,6 +38,7 @@ data class RecordEditState(
 class RecordEditViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getCategoryUseCase: GetCategoryUseCase,
     private val saveTaskUseCase: SaveTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val moveTaskToCategoryUseCase: MoveTaskToCategoryUseCase,
@@ -69,8 +71,12 @@ class RecordEditViewModel @Inject constructor(
                     return@launch
                 }
             }
+            val cat = if (categoryId != 0L) getCategoryUseCase(categoryId) else null
+            val bulletCol = if (cat != null && cat.defaultBulletColor != 0) cat.defaultBulletColor else defaultBulletColor
+            val textCol = if (cat != null && cat.defaultTextColor != 0) cat.defaultTextColor else 0
             _state.value = _state.value.copy(
-                bulletColor = defaultBulletColor,
+                bulletColor = bulletCol,
+                textColor = textCol,
                 categoryId = categoryId,
                 categories = categories,
                 isAddMode = isAddMode,

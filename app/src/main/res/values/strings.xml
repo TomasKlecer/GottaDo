@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">GottaDo</string>
+    <string name="support_dialog_title">Support GottaDo</string>
+    <string name="support_dialog_message">If you find yourself liking GottaDo, feel free to support me in making more cool apps — every little bit will help!</string>
+    <string name="support_dialog_open">Support</string>
+    <string name="support_dialog_close">Maybe later</string>
+    <string name="help_dialog_title">How to Use GottaDo</string>
+    <string name="help_dialog_close">Got it</string>
     <string name="widget_open_app">Open app</string>
     <string name="widget_reorder">⇅</string>
     <string name="widget_undo_delete">↩ Undo delete</string>
@@ -174,6 +180,10 @@
     <string name="info_widget_collapsible_categories">When enabled, each category on the widget will have a collapse/expand arrow to show or hide its entries.</string>
 
     <string name="info_cat_color">Color used for the category header and its task bullets</string>
+    <string name="category_settings_default_bullet_color">Default bullet/checkbox color</string>
+    <string name="info_cat_default_bullet_color">Default color for bullet or checkbox when adding a new entry to this category</string>
+    <string name="category_settings_default_text_color">Default text color</string>
+    <string name="info_cat_default_text_color">Default text color when adding a new entry to this category</string>
     <string name="info_cat_checkbox">Display checkboxes instead of bullet dots for tasks in this category</string>
     <string name="info_cat_time_first">Sort tasks with scheduled times to the top of this category</string>
     <string name="info_cat_type">Determines task visibility based on the day of the week</string>

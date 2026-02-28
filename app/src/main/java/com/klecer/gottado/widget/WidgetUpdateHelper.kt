@@ -101,7 +101,9 @@ object WidgetUpdateHelper {
             rv.setViewVisibility(R.id.widget_footer_bar, View.GONE)
         } else {
             rv.setViewVisibility(R.id.widget_footer_bar, View.VISIBLE)
-            rv.setTextColor(R.id.widget_btn_reorder, config.defaultTextColor)
+            rv.setInt(R.id.widget_btn_reorder, "setColorFilter", config.defaultTextColor)
+            rv.setInt(R.id.widget_btn_open_app, "setColorFilter", config.defaultTextColor)
+            rv.setInt(R.id.widget_btn_picker, "setColorFilter", config.defaultTextColor)
             val openAppPi = WidgetIntents.openAppPendingIntent(context, config.widgetId, appWidgetId * 100 + 3)
             rv.setOnClickPendingIntent(R.id.widget_btn_open_app, openAppPi)
             val pickerPi = WidgetIntents.openPresetPickerPendingIntent(context, appWidgetId, appWidgetId * 100 + 5)

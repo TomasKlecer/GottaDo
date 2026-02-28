@@ -289,6 +289,53 @@ fun CategoryListScreen(
             }
         }
 
+        val entryColors = viewModel.colorPrefs.getPalette(ColorPrefs.KEY_ENTRY)
+        LabelWithInfo(
+            stringResource(R.string.category_settings_default_bullet_color),
+            stringResource(R.string.info_cat_default_bullet_color),
+            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+            entryColors.forEach { color ->
+                val selected = category!!.defaultBulletColor == color
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                        .background(Color(color))
+                        .then(
+                            if (selected) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                            else Modifier.border(1.dp, Color.LightGray, CircleShape)
+                        )
+                        .clickable { viewModel.updateDefaultBulletColor(color) }
+                )
+            }
+        }
+
+        LabelWithInfo(
+            stringResource(R.string.category_settings_default_text_color),
+            stringResource(R.string.info_cat_default_text_color),
+            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+            entryColors.forEach { color ->
+                val selected = category!!.defaultTextColor == color
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                        .background(Color(color))
+                        .then(
+                            if (selected) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                            else Modifier.border(1.dp, Color.LightGray, CircleShape)
+                        )
+                        .clickable { viewModel.updateDefaultTextColor(color) }
+                )
+            }
+        }
+
         // ── Display options ──
         CollapsibleSection(stringResource(R.string.section_cat_display), icon = Icons.Default.Tune) {
             CheckboxWithInfo(

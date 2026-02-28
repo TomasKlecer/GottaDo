@@ -21,8 +21,8 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entities: List<CategoryEntity>)
 
-    @Query("UPDATE category SET name = :name, sortOrder = :sortOrder, showCheckboxInsteadOfBullet = :showCheckboxInsteadOfBullet, tasksWithTimeFirst = :tasksWithTimeFirst, categoryType = :categoryType, color = :color, syncWithCalendarToday = :syncWithCalendarToday, showCalendarIcon = :showCalendarIcon, showDeleteButton = :showDeleteButton, notifyOnTime = :notifyOnTime, notifyMinutesBefore = :notifyMinutesBefore, autoSortTimedEntries = :autoSortTimedEntries, timedEntriesAscending = :timedEntriesAscending WHERE id = :id")
-    suspend fun update(id: Long, name: String, sortOrder: Int, showCheckboxInsteadOfBullet: Boolean, tasksWithTimeFirst: Boolean, categoryType: String, color: Int, syncWithCalendarToday: Boolean, showCalendarIcon: Boolean, showDeleteButton: Boolean, notifyOnTime: Boolean, notifyMinutesBefore: Int, autoSortTimedEntries: Boolean, timedEntriesAscending: Boolean)
+    @Query("UPDATE category SET name = :name, sortOrder = :sortOrder, showCheckboxInsteadOfBullet = :showCheckboxInsteadOfBullet, tasksWithTimeFirst = :tasksWithTimeFirst, categoryType = :categoryType, color = :color, syncWithCalendarToday = :syncWithCalendarToday, showCalendarIcon = :showCalendarIcon, showDeleteButton = :showDeleteButton, notifyOnTime = :notifyOnTime, notifyMinutesBefore = :notifyMinutesBefore, autoSortTimedEntries = :autoSortTimedEntries, timedEntriesAscending = :timedEntriesAscending, defaultBulletColor = :defaultBulletColor, defaultTextColor = :defaultTextColor WHERE id = :id")
+    suspend fun update(id: Long, name: String, sortOrder: Int, showCheckboxInsteadOfBullet: Boolean, tasksWithTimeFirst: Boolean, categoryType: String, color: Int, syncWithCalendarToday: Boolean, showCalendarIcon: Boolean, showDeleteButton: Boolean, notifyOnTime: Boolean, notifyMinutesBefore: Int, autoSortTimedEntries: Boolean, timedEntriesAscending: Boolean, defaultBulletColor: Int, defaultTextColor: Int)
 
     @Query("DELETE FROM category WHERE id = :id")
     suspend fun deleteById(id: Long)
