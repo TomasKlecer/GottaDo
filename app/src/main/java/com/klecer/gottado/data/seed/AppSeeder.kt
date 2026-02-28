@@ -51,7 +51,8 @@ class AppSeeder @Inject constructor(
             name = "TODAY",
             sortOrder = 0,
             showCheckboxInsteadOfBullet = true,
-            defaultBulletColor = RED
+            defaultBulletColor = RED,
+            notifyOnTime = true
         ))
 
         val tomorrowId = categoryDao.insert(CategoryEntity(
@@ -160,8 +161,8 @@ class AppSeeder @Inject constructor(
             "Move them to TODAY when you're ready"
         ))
         seedEntries(notesId, BLUE, now, listOf(
-            "<b>Adding widget:</b> long-press home screen → Widgets → GottaDo",
             "Welcome to GottaDo!",
+            "<b>Adding widget:</b> long-press home screen → Widgets → GottaDo",
             "<b>Widget buttons</b> (bottom of widget):",
             "↔ Switch widget template",
             "⚙ Open app settings",

@@ -3,7 +3,7 @@
     <string name="support_dialog_title">Support GottaDo</string>
     <string name="support_dialog_message">If you find yourself liking GottaDo, feel free to support me in making more cool apps — every little bit will help!</string>
     <string name="support_dialog_open">Support</string>
-    <string name="support_dialog_close">Maybe later</string>
+    <string name="support_dialog_close">Meh… not really.</string>
     <string name="help_dialog_title">How to Use GottaDo</string>
     <string name="help_dialog_close">Got it</string>
     <string name="widget_open_app">Open app</string>
@@ -108,6 +108,8 @@
 
     <string name="routine_name">Routine name</string>
     <string name="routine_add">Add routine</string>
+    <string name="section_category_entries">Entries</string>
+    <string name="category_no_entries">No entries in this category.</string>
     <string name="routine_edit">Edit</string>
     <string name="routine_delete">Delete</string>
     <string name="routine_save">Save</string>
@@ -117,7 +119,7 @@
     <string name="routine_day_of_week">Day of week</string>
     <string name="routine_day_of_month">Day of month</string>
     <string name="routine_month">Month</string>
-    <string name="routine_visibility">Visibility</string>
+    <string name="routine_visibility">Category visibility in widget</string>
     <string name="routine_incomplete_tasks">Incomplete tasks action</string>
     <string name="routine_completed_tasks">Completed tasks action</string>
     <string name="routine_move_to">Move to category</string>
@@ -239,6 +241,8 @@
     <string name="notification_channel_name">Task reminders</string>
     <string name="notification_channel_desc">Notifications for scheduled task entries</string>
 
+    <string name="settings_language_section">Language</string>
+
     <string name="settings_color_pickers_section">Color pickers</string>
     <string name="settings_color_picker_title">Select color</string>
     <string name="settings_color_picker_defaults">Defaults</string>
@@ -257,4 +261,70 @@
     <string name="section_cat_calendar">Calendar sync</string>
     <string name="section_cat_notifications">Notifications</string>
     <string name="section_cat_routines">Routines</string>
+
+    <string name="routine_freq_daily">Daily</string>
+    <string name="routine_freq_weekly">Weekly</string>
+    <string name="routine_freq_monthly">Monthly</string>
+    <string name="routine_freq_yearly">Yearly</string>
+    <string name="routine_vis_hidden">Hidden</string>
+    <string name="routine_vis_visible">Visible</string>
+    <string name="routine_action_delete">Delete</string>
+    <string name="routine_action_move">Move</string>
+    <string name="routine_action_complete">Complete</string>
+    <string name="routine_action_uncomplete">Uncomplete</string>
+    <string name="routine_dont_move">Don\'t move</string>
+    <string name="routine_day_label">Day (1–31)</string>
+    <string name="routine_month_label">Month (0–11)</string>
+
+    <string name="day_short_mon">Mon</string>
+    <string name="day_short_tue">Tue</string>
+    <string name="day_short_wed">Wed</string>
+    <string name="day_short_thu">Thu</string>
+    <string name="day_short_fri">Fri</string>
+    <string name="day_short_sat">Sat</string>
+    <string name="day_short_sun">Sun</string>
+    <string name="month_short_jan">Jan</string>
+    <string name="month_short_feb">Feb</string>
+    <string name="month_short_mar">Mar</string>
+    <string name="month_short_apr">Apr</string>
+    <string name="month_short_may">May</string>
+    <string name="month_short_jun">Jun</string>
+    <string name="month_short_jul">Jul</string>
+    <string name="month_short_aug">Aug</string>
+    <string name="month_short_sep">Sep</string>
+    <string name="month_short_oct">Oct</string>
+    <string name="month_short_nov">Nov</string>
+    <string name="month_short_dec">Dec</string>
+
+    <string name="sync_freq_manual">Manual only</string>
+    <string name="sync_freq_15min">Every 15 minutes</string>
+    <string name="sync_freq_30min">Every 30 minutes</string>
+    <string name="sync_freq_1hour">Every hour</string>
+    <string name="sync_freq_2hours">Every 2 hours</string>
+
+    <string name="help_adding_widget">Adding the Widget to Your Home Screen</string>
+    <string name="help_adding_widget_body">Long-press on an empty area of your home screen, tap \"Widgets\", find \"GottaDo\" and drag it to your screen.</string>
+    <string name="help_widget_buttons">Widget Buttons</string>
+    <string name="help_widget_buttons_body">Three buttons appear at the bottom of the widget:</string>
+    <string name="help_widget_buttons_list">\u0020 ↔ \u0020Switch widget template\n\u0020 ⚙ \u0020Open app settings\n\u0020 ⇅ \u0020Reorder entries</string>
+    <string name="help_managing_entries">Managing Entries</string>
+    <string name="help_managing_entries_body">Tap a category name to add a new entry. Tap an entry to edit it. Tap a checkbox/bullet to mark complete.</string>
+    <string name="help_categories">Categories</string>
+    <string name="help_categories_body">Manage categories in the \"Categories\" tab. Each category can have its own color, display style (bullet or checkbox), and behavior settings.</string>
+    <string name="help_calendar_sync">Calendar Sync</string>
+    <string name="help_calendar_sync_body">Enable Google Calendar sync in Settings (gear icon in the top bar). Then set sync rules per category (e.g. \"Today\", \"Tomorrow\") to auto-import calendar events.</string>
+    <string name="help_notifications">Notifications</string>
+    <string name="help_notifications_body">Enable notifications in Settings, then enable per-category in category settings. Set how many minutes before a timed entry you want to be notified.</string>
+    <string name="help_routines">Routines</string>
+    <string name="help_routines_body">Automate tasks on a schedule — move incomplete tasks between categories, uncheck completed entries, or delete them. Configure in category settings.</string>
+    <string name="help_templates">Widget Templates</string>
+    <string name="help_templates_body">Create multiple widget configurations in the \"Widgets\" tab. Each home screen widget can use any template — switch with the ↔ button.</string>
+    <string name="help_entry_options">Entry Options</string>
+    <string name="help_entry_options_body">Customize which fields appear in the add/edit entry dialog in the \"Entry options\" tab — color pickers, time field, category dropdown, and more.</string>
+    <string name="help_history">History</string>
+    <string name="help_history_body">Deleted entries go to the \"History\" tab. Browse by category or by time, restore or permanently delete entries.</string>
+
+    <string name="info_settings_calendar_sync">Connect to Google Calendar and automatically import events into your categories based on sync rules. Set the sync frequency or trigger a manual sync.</string>
+    <string name="info_settings_notifications">Enable notifications to get reminders before scheduled task entries. Configure timing per category in category settings.</string>
+    <string name="info_settings_color_pickers">Customize the default color palettes available in color pickers throughout the app.</string>
 </resources>

@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.klecer.gottado.calendar.CalendarSyncManager
@@ -20,13 +22,21 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+enum class AppLanguage(val code: String, val displayName: String) {
+    SYSTEM("", "System default"),
+    ENGLISH("en", "English"),
+    CZECH("cs", "Čeština"),
+    GERMAN("de", "Deutsch");
+}
+
 data class SettingsState(
     val calendarEnabled: Boolean = false,
     val syncFrequency: SyncFrequency = SyncFrequency.MANUAL,
     val hasPermission: Boolean = false,
     val lastSyncMillis: Long = 0L,
     val notificationsEnabled: Boolean = false,
-    val hasNotificationPermission: Boolean = false
+    val hasNotificationPermission: Boolean = false,
+    val language: AppLanguage = AppLanguage.SYSTEM
 )
 
 @HiltViewModel
@@ -56,14 +66,24 @@ class SettingsViewModel @Inject constructor(
     private val _state = MutableStateFlow(loadState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
 
-    private fun loadState() = SettingsState(
-        calendarEnabled = syncPrefs.enabled,
-        syncFrequency = syncPrefs.frequency,
-        hasPermission = syncManager.hasCalendarPermission(),
-        lastSyncMillis = syncPrefs.lastSyncMillis,
-        notificationsEnabled = syncPrefs.notificationsEnabled,
-        hasNotificationPermission = hasNotificationPermission()
-    )
+    private fun loadState(): SettingsState {
+        val locales = AppCompatDelegate.getApplicationLocales()
+        val currentLang = if (locales.isEmpty) {
+            AppLanguage.SYSTEM
+        } else {
+            val tag = locales.get(0)?.language ?: ""
+            AppLanguage.entries.find { it.code == tag } ?: AppLanguage.SYSTEM
+        }
+        return SettingsState(
+            calendarEnabled = syncPrefs.enabled,
+            syncFrequency = syncPrefs.frequency,
+            hasPermission = syncManager.hasCalendarPermission(),
+            lastSyncMillis = syncPrefs.lastSyncMillis,
+            notificationsEnabled = syncPrefs.notificationsEnabled,
+            hasNotificationPermission = hasNotificationPermission(),
+            language = currentLang
+        )
+    }
 
     private fun hasNotificationPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -105,5 +125,15 @@ class SettingsViewModel @Inject constructor(
             syncManager.sync()
             _state.value = _state.value.copy(lastSyncMillis = syncPrefs.lastSyncMillis)
         }
+    }
+
+    fun setLanguage(lang: AppLanguage) {
+        _state.value = _state.value.copy(language = lang)
+        val localeList = if (lang == AppLanguage.SYSTEM) {
+            LocaleListCompat.getEmptyLocaleList()
+        } else {
+            LocaleListCompat.forLanguageTags(lang.code)
+        }
+        AppCompatDelegate.setApplicationLocales(localeList)
     }
 }

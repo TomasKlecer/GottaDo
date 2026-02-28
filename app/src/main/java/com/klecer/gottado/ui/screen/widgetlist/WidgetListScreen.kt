@@ -359,29 +359,13 @@ fun WidgetListScreen(
 
         // ── Layout ──
         CollapsibleSection(stringResource(R.string.section_widget_layout), icon = Icons.Default.ViewModule) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 4.dp)
-            ) {
-                Text(
-                    stringResource(R.string.widget_settings_buttons_visible),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = if (!config!!.buttonsAtBottom) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(Modifier.width(8.dp))
-                Switch(
-                    checked = config!!.buttonsAtBottom,
-                    onCheckedChange = { viewModel.updateButtonsAtBottom(it) }
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    stringResource(R.string.widget_settings_buttons_scrollable),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = if (config!!.buttonsAtBottom) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(Modifier.width(4.dp))
-                InfoIcon(stringResource(R.string.info_widget_buttons_at_bottom))
-            }
+            SwitchWithInfo(
+                checked = config!!.buttonsAtBottom,
+                onCheckedChange = { viewModel.updateButtonsAtBottom(it) },
+                labelOn = stringResource(R.string.widget_settings_buttons_scrollable),
+                labelOff = stringResource(R.string.widget_settings_buttons_visible),
+                info = stringResource(R.string.info_widget_buttons_at_bottom)
+            )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -525,6 +509,30 @@ private fun InfoIcon(info: String) {
 private fun LabelWithInfo(label: String, info: String, modifier: Modifier = Modifier) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(label, style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.width(4.dp))
+        InfoIcon(info)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwitchWithInfo(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    labelOn: String,
+    labelOff: String,
+    info: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(start = 12.dp, top = 4.dp, bottom = 4.dp)
+    ) {
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Spacer(Modifier.width(8.dp))
+        Text(
+            if (checked) labelOn else labelOff,
+            style = MaterialTheme.typography.bodyLarge
+        )
         Spacer(Modifier.width(4.dp))
         InfoIcon(info)
     }

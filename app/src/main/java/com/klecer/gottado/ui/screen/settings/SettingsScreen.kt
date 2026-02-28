@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -93,9 +94,9 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        Text(
-            stringResource(R.string.settings_calendar_section),
-            style = MaterialTheme.typography.titleMedium
+        SettingsSectionHeader(
+            title = stringResource(R.string.settings_calendar_section),
+            infoText = stringResource(R.string.info_settings_calendar_sync)
         )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -144,7 +145,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 onExpandedChange = { freqExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = state.syncFrequency.label,
+                    value = syncFrequencyLabel(state.syncFrequency),
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = freqExpanded) },
@@ -156,7 +157,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 ) {
                     SyncFrequency.entries.forEach { freq ->
                         DropdownMenuItem(
-                            text = { Text(freq.label) },
+                            text = { Text(syncFrequencyLabel(freq)) },
                             onClick = {
                                 viewModel.setSyncFrequency(freq)
                                 freqExpanded = false
@@ -185,9 +186,9 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
         Spacer(Modifier.size(24.dp))
 
-        Text(
-            stringResource(R.string.settings_notifications_section),
-            style = MaterialTheme.typography.titleMedium
+        SettingsSectionHeader(
+            title = stringResource(R.string.settings_notifications_section),
+            infoText = stringResource(R.string.info_settings_notifications)
         )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -223,6 +224,43 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         }
 
         Spacer(Modifier.size(24.dp))
+
+        Text(
+            stringResource(R.string.settings_language_section),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+        var langExpanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = langExpanded,
+            onExpandedChange = { langExpanded = it }
+        ) {
+            OutlinedTextField(
+                value = state.language.displayName,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = langExpanded) },
+                modifier = Modifier.fillMaxWidth().menuAnchor()
+            )
+            ExposedDropdownMenu(
+                expanded = langExpanded,
+                onDismissRequest = { langExpanded = false }
+            ) {
+                AppLanguage.entries.forEach { lang ->
+                    DropdownMenuItem(
+                        text = { Text(lang.displayName) },
+                        onClick = {
+                            viewModel.setLanguage(lang)
+                            langExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.size(24.dp))
         ColorPickersSection(viewModel)
     }
 }
@@ -241,6 +279,8 @@ private fun ColorPickersSection(viewModel: SettingsViewModel) {
     var editingKey by remember { mutableStateOf<String?>(null) }
     var editingIndex by remember { mutableStateOf(0) }
 
+    val colorInfoTooltipState = rememberTooltipState()
+    val colorInfoScope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -253,6 +293,21 @@ private fun ColorPickersSection(viewModel: SettingsViewModel) {
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f)
         )
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(stringResource(R.string.info_settings_color_pickers)) } },
+            state = colorInfoTooltipState
+        ) {
+            Icon(
+                Icons.Default.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable { colorInfoScope.launch { colorInfoTooltipState.show() } }
+            )
+        }
+        Spacer(Modifier.width(8.dp))
         Icon(
             if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
             contentDescription = null
@@ -309,5 +364,40 @@ private fun ColorPickersSection(viewModel: SettingsViewModel) {
             onColorSelected = { color -> viewModel.updatePaletteColor(key, editingIndex, color) },
             onDismiss = { editingKey = null }
         )
+    }
+}
+
+@Composable
+private fun syncFrequencyLabel(f: SyncFrequency): String = when (f) {
+    SyncFrequency.MANUAL -> stringResource(R.string.sync_freq_manual)
+    SyncFrequency.EVERY_15_MIN -> stringResource(R.string.sync_freq_15min)
+    SyncFrequency.EVERY_30_MIN -> stringResource(R.string.sync_freq_30min)
+    SyncFrequency.EVERY_1_HOUR -> stringResource(R.string.sync_freq_1hour)
+    SyncFrequency.EVERY_2_HOURS -> stringResource(R.string.sync_freq_2hours)
+}
+
+@Composable
+private fun SettingsSectionHeader(title: String, infoText: String) {
+    val tooltipState = rememberTooltipState()
+    val scope = rememberCoroutineScope()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(infoText) } },
+            state = tooltipState
+        ) {
+            Icon(
+                Icons.Default.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable { scope.launch { tooltipState.show() } }
+            )
+        }
     }
 }

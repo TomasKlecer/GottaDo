@@ -61,7 +61,7 @@ fun RoutineListScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(routineSummary(routine), style = MaterialTheme.typography.bodyLarge)
+                            Text(routineSummaryText(routine), style = MaterialTheme.typography.bodyLarge)
                         }
                         Row {
                             TextButton(onClick = { onEditRoutine(routine.id) }) {
@@ -78,34 +78,45 @@ fun RoutineListScreen(
     }
 }
 
-private fun routineSummary(r: RoutineEntity): String {
+@Composable
+private fun routineSummaryText(r: RoutineEntity): String {
     val time = "%02d:%02d".format(r.scheduleTimeHour, r.scheduleTimeMinute)
     return when (r.frequency) {
-        RoutineFrequency.DAILY -> "Daily at $time"
+        RoutineFrequency.DAILY -> "${stringResource(R.string.routine_freq_daily)} $time"
         RoutineFrequency.WEEKLY -> {
-            val day = dayName(r.scheduleDayOfWeek ?: Calendar.MONDAY)
-            "Weekly $day at $time"
+            val day = dayNameLocalized(r.scheduleDayOfWeek ?: Calendar.MONDAY)
+            "${stringResource(R.string.routine_freq_weekly)} $day $time"
         }
-        RoutineFrequency.MONTHLY -> "Monthly day ${r.scheduleDayOfMonth ?: 1} at $time"
-        RoutineFrequency.YEARLY -> "Yearly ${r.scheduleMonth?.let { monthName(it) } ?: ""} ${r.scheduleDay ?: 1} at $time"
+        RoutineFrequency.MONTHLY -> "${stringResource(R.string.routine_freq_monthly)} ${r.scheduleDayOfMonth ?: 1}. $time"
+        RoutineFrequency.YEARLY -> "${stringResource(R.string.routine_freq_yearly)} ${monthNameLocalized(r.scheduleMonth ?: Calendar.JANUARY)} ${r.scheduleDay ?: 1} $time"
     }
 }
 
-private fun dayName(dow: Int): String = when (dow) {
-    Calendar.SUNDAY -> "Sun"
-    Calendar.MONDAY -> "Mon"
-    Calendar.TUESDAY -> "Tue"
-    Calendar.WEDNESDAY -> "Wed"
-    Calendar.THURSDAY -> "Thu"
-    Calendar.FRIDAY -> "Fri"
-    Calendar.SATURDAY -> "Sat"
+@Composable
+private fun dayNameLocalized(dow: Int): String = when (dow) {
+    Calendar.SUNDAY -> stringResource(R.string.day_short_sun)
+    Calendar.MONDAY -> stringResource(R.string.day_short_mon)
+    Calendar.TUESDAY -> stringResource(R.string.day_short_tue)
+    Calendar.WEDNESDAY -> stringResource(R.string.day_short_wed)
+    Calendar.THURSDAY -> stringResource(R.string.day_short_thu)
+    Calendar.FRIDAY -> stringResource(R.string.day_short_fri)
+    Calendar.SATURDAY -> stringResource(R.string.day_short_sat)
     else -> "?"
 }
 
-private fun monthName(m: Int): String = when (m) {
-    Calendar.JANUARY -> "Jan"; Calendar.FEBRUARY -> "Feb"; Calendar.MARCH -> "Mar"
-    Calendar.APRIL -> "Apr"; Calendar.MAY -> "May"; Calendar.JUNE -> "Jun"
-    Calendar.JULY -> "Jul"; Calendar.AUGUST -> "Aug"; Calendar.SEPTEMBER -> "Sep"
-    Calendar.OCTOBER -> "Oct"; Calendar.NOVEMBER -> "Nov"; Calendar.DECEMBER -> "Dec"
+@Composable
+private fun monthNameLocalized(m: Int): String = when (m) {
+    Calendar.JANUARY -> stringResource(R.string.month_short_jan)
+    Calendar.FEBRUARY -> stringResource(R.string.month_short_feb)
+    Calendar.MARCH -> stringResource(R.string.month_short_mar)
+    Calendar.APRIL -> stringResource(R.string.month_short_apr)
+    Calendar.MAY -> stringResource(R.string.month_short_may)
+    Calendar.JUNE -> stringResource(R.string.month_short_jun)
+    Calendar.JULY -> stringResource(R.string.month_short_jul)
+    Calendar.AUGUST -> stringResource(R.string.month_short_aug)
+    Calendar.SEPTEMBER -> stringResource(R.string.month_short_sep)
+    Calendar.OCTOBER -> stringResource(R.string.month_short_oct)
+    Calendar.NOVEMBER -> stringResource(R.string.month_short_nov)
+    Calendar.DECEMBER -> stringResource(R.string.month_short_dec)
     else -> "?"
 }

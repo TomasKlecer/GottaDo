@@ -9,6 +9,8 @@ import com.klecer.gottado.data.db.dao.CalendarSyncRuleDao
 import com.klecer.gottado.data.db.entity.CalendarSyncRuleEntity
 import com.klecer.gottado.data.db.entity.CategoryEntity
 import com.klecer.gottado.data.db.entity.RoutineEntity
+import com.klecer.gottado.data.db.entity.TaskEntity
+import com.klecer.gottado.domain.repository.TaskRepository
 import com.klecer.gottado.domain.repository.WidgetCategoryRepository
 import com.klecer.gottado.domain.usecase.DeleteRoutineUseCase
 import com.klecer.gottado.domain.usecase.GetCategoriesUseCase
@@ -42,7 +44,8 @@ class CategoryTabViewModel @Inject constructor(
     private val calendarSyncRuleDao: CalendarSyncRuleDao,
     val syncPrefs: CalendarSyncPrefs,
     private val notificationScheduler: TaskNotificationScheduler,
-    val colorPrefs: ColorPrefs
+    val colorPrefs: ColorPrefs,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val initialCategoryId: Long? = savedStateHandle.get<String>("categoryId")?.toLongOrNull()
@@ -61,6 +64,9 @@ class CategoryTabViewModel @Inject constructor(
 
     private val _syncRules = MutableStateFlow<List<CalendarSyncRuleEntity>>(emptyList())
     val syncRules: StateFlow<List<CalendarSyncRuleEntity>> = _syncRules.asStateFlow()
+
+    private val _tasks = MutableStateFlow<List<TaskEntity>>(emptyList())
+    val tasks: StateFlow<List<TaskEntity>> = _tasks.asStateFlow()
 
     private var saveJob: Job? = null
     private var hasPendingChanges = false
@@ -100,6 +106,7 @@ class CategoryTabViewModel @Inject constructor(
             _category.value = getCategoryUseCase(categoryId)
             _routines.value = getRoutinesForCategoryUseCase(categoryId)
             _syncRules.value = calendarSyncRuleDao.getRulesForCategory(categoryId)
+            _tasks.value = taskRepository.getByCategory(categoryId)
         }
     }
 
@@ -247,6 +254,46 @@ class CategoryTabViewModel @Inject constructor(
         viewModelScope.launch {
             calendarSyncRuleDao.deleteById(ruleId)
             _syncRules.value = calendarSyncRuleDao.getRulesForCategory(catId)
+        }
+    }
+
+    fun refreshTasks() {
+        val catId = _selectedCategoryId.value ?: return
+        viewModelScope.launch {
+            _tasks.value = taskRepository.getByCategory(catId)
+        }
+    }
+
+    fun updateTask(task: TaskEntity) {
+        viewModelScope.launch {
+            taskRepository.update(task)
+            refreshTasks()
+            val catId = _selectedCategoryId.value ?: return@launch
+            widgetCategoryRepository.getWidgetIdsForCategory(catId).forEach { presetId ->
+                WidgetUpdateHelper.updateAllForPreset(appContext, presetId)
+            }
+        }
+    }
+
+    fun deleteTask(taskId: Long) {
+        viewModelScope.launch {
+            taskRepository.deleteById(taskId)
+            refreshTasks()
+            val catId = _selectedCategoryId.value ?: return@launch
+            widgetCategoryRepository.getWidgetIdsForCategory(catId).forEach { presetId ->
+                WidgetUpdateHelper.updateAllForPreset(appContext, presetId)
+            }
+        }
+    }
+
+    fun toggleTaskCompleted(task: TaskEntity) {
+        viewModelScope.launch {
+            taskRepository.updateCompleted(task.id, !task.completed, System.currentTimeMillis())
+            refreshTasks()
+            val catId = _selectedCategoryId.value ?: return@launch
+            widgetCategoryRepository.getWidgetIdsForCategory(catId).forEach { presetId ->
+                WidgetUpdateHelper.updateAllForPreset(appContext, presetId)
+            }
         }
     }
 }

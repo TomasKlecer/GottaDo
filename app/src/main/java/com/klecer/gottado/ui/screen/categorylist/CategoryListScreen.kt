@@ -19,8 +19,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import android.text.Html
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -70,14 +74,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import com.klecer.gottado.R
 import com.klecer.gottado.data.db.entity.CalendarSyncRuleType
 import com.klecer.gottado.data.db.entity.RoutineEntity
 import com.klecer.gottado.data.db.entity.RoutineFrequency
+import com.klecer.gottado.data.db.entity.TaskEntity
 import com.klecer.gottado.ui.color.ColorPrefs
 import com.klecer.gottado.ui.screen.categorysettings.CategoryTabViewModel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 private val SYNC_RULE_TYPES = CalendarSyncRuleType.entries.map { it.name to when (it) {
     CalendarSyncRuleType.TODAY -> R.string.sync_rule_TODAY
@@ -117,12 +127,14 @@ fun CategoryListScreen(
     val category by viewModel.category.collectAsState()
     val routines by viewModel.routines.collectAsState()
     val syncRules by viewModel.syncRules.collectAsState()
+    val tasks by viewModel.tasks.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.refreshRoutines()
+                viewModel.refreshTasks()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -512,7 +524,7 @@ fun CategoryListScreen(
                                 Text(routine.name, style = MaterialTheme.typography.bodyLarge)
                             }
                             Text(
-                                routineSummary(routine),
+                                routineSummaryText(routine),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -536,33 +548,177 @@ fun CategoryListScreen(
                 Text(stringResource(R.string.routine_add))
             }
         }
+
+        // ── Entries ──
+        CollapsibleSection(stringResource(R.string.section_category_entries), icon = Icons.Default.Edit) {
+            if (tasks.isEmpty()) {
+                Text(
+                    stringResource(R.string.category_no_entries),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            } else {
+                tasks.forEach { task ->
+                    EntryRow(
+                        task = task,
+                        showCheckbox = category?.showCheckboxInsteadOfBullet == true,
+                        onToggleCompleted = { viewModel.toggleTaskCompleted(task) },
+                        onEdit = { newText ->
+                            viewModel.updateTask(task.copy(
+                                contentHtml = newText,
+                                updatedAtMillis = System.currentTimeMillis()
+                            ))
+                        },
+                        onDelete = { viewModel.deleteTask(task.id) }
+                    )
+                }
+            }
+        }
     }
 }
 
 // ── Helper composables ──
 
-private fun routineSummary(r: RoutineEntity): String {
+@Composable
+private fun routineSummaryText(r: RoutineEntity): String {
     val time = "%02d:%02d".format(r.scheduleTimeHour, r.scheduleTimeMinute)
     return when (r.frequency) {
-        RoutineFrequency.DAILY -> "Daily at $time"
+        RoutineFrequency.DAILY -> "${stringResource(R.string.routine_freq_daily)} $time"
         RoutineFrequency.WEEKLY -> {
             val day = when (r.scheduleDayOfWeek) {
-                Calendar.SUNDAY -> "Sun"; Calendar.MONDAY -> "Mon"; Calendar.TUESDAY -> "Tue"
-                Calendar.WEDNESDAY -> "Wed"; Calendar.THURSDAY -> "Thu"; Calendar.FRIDAY -> "Fri"
-                Calendar.SATURDAY -> "Sat"; else -> "?"
-            }
-            "Weekly $day at $time"
-        }
-        RoutineFrequency.MONTHLY -> "Monthly day ${r.scheduleDayOfMonth ?: 1} at $time"
-        RoutineFrequency.YEARLY -> "Yearly ${r.scheduleDay ?: 1}. ${r.scheduleMonth?.let { m ->
-            when (m) {
-                Calendar.JANUARY -> "Jan"; Calendar.FEBRUARY -> "Feb"; Calendar.MARCH -> "Mar"
-                Calendar.APRIL -> "Apr"; Calendar.MAY -> "May"; Calendar.JUNE -> "Jun"
-                Calendar.JULY -> "Jul"; Calendar.AUGUST -> "Aug"; Calendar.SEPTEMBER -> "Sep"
-                Calendar.OCTOBER -> "Oct"; Calendar.NOVEMBER -> "Nov"; Calendar.DECEMBER -> "Dec"
+                Calendar.SUNDAY -> stringResource(R.string.day_short_sun)
+                Calendar.MONDAY -> stringResource(R.string.day_short_mon)
+                Calendar.TUESDAY -> stringResource(R.string.day_short_tue)
+                Calendar.WEDNESDAY -> stringResource(R.string.day_short_wed)
+                Calendar.THURSDAY -> stringResource(R.string.day_short_thu)
+                Calendar.FRIDAY -> stringResource(R.string.day_short_fri)
+                Calendar.SATURDAY -> stringResource(R.string.day_short_sat)
                 else -> "?"
             }
-        } ?: ""} at $time"
+            "${stringResource(R.string.routine_freq_weekly)} $day $time"
+        }
+        RoutineFrequency.MONTHLY -> "${stringResource(R.string.routine_freq_monthly)} ${r.scheduleDayOfMonth ?: 1}. $time"
+        RoutineFrequency.YEARLY -> "${stringResource(R.string.routine_freq_yearly)} ${r.scheduleMonth?.let { m ->
+            when (m) {
+                Calendar.JANUARY -> stringResource(R.string.month_short_jan)
+                Calendar.FEBRUARY -> stringResource(R.string.month_short_feb)
+                Calendar.MARCH -> stringResource(R.string.month_short_mar)
+                Calendar.APRIL -> stringResource(R.string.month_short_apr)
+                Calendar.MAY -> stringResource(R.string.month_short_may)
+                Calendar.JUNE -> stringResource(R.string.month_short_jun)
+                Calendar.JULY -> stringResource(R.string.month_short_jul)
+                Calendar.AUGUST -> stringResource(R.string.month_short_aug)
+                Calendar.SEPTEMBER -> stringResource(R.string.month_short_sep)
+                Calendar.OCTOBER -> stringResource(R.string.month_short_oct)
+                Calendar.NOVEMBER -> stringResource(R.string.month_short_nov)
+                Calendar.DECEMBER -> stringResource(R.string.month_short_dec)
+                else -> "?"
+            }
+        } ?: ""} ${r.scheduleDay ?: 1} $time"
+    }
+}
+
+@Composable
+private fun EntryRow(
+    task: TaskEntity,
+    showCheckbox: Boolean,
+    onToggleCompleted: () -> Unit,
+    onEdit: (String) -> Unit,
+    onDelete: () -> Unit
+) {
+    var editing by remember { mutableStateOf(false) }
+    var editText by remember { mutableStateOf("") }
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        if (editing) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = editText,
+                    onValueChange = { editText = it },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true
+                )
+                Spacer(Modifier.width(4.dp))
+                TextButton(onClick = {
+                    onEdit(editText)
+                    editing = false
+                }) { Text(stringResource(android.R.string.ok)) }
+                TextButton(onClick = { editing = false }) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (showCheckbox) {
+                    Checkbox(
+                        checked = task.completed,
+                        onCheckedChange = { onToggleCompleted() },
+                        modifier = Modifier.size(28.dp)
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(Color(task.bulletColor))
+                    )
+                    Spacer(Modifier.width(8.dp))
+                }
+
+                @Suppress("DEPRECATION")
+                val displayText = Html.fromHtml(task.contentHtml).toString()
+
+                Text(
+                    text = displayText,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        textDecoration = if (task.completed) TextDecoration.LineThrough else TextDecoration.None
+                    ),
+                    modifier = Modifier.weight(1f),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (task.completed) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            else MaterialTheme.colorScheme.onSurface
+                )
+
+                if (task.scheduledTimeMillis != null) {
+                    val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault())
+                        .format(Date(task.scheduledTimeMillis))
+                    Text(
+                        timeStr,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        @Suppress("DEPRECATION")
+                        editText = Html.fromHtml(task.contentHtml).toString()
+                        editing = true
+                    },
+                    modifier = Modifier.size(28.dp)
+                ) {
+                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                }
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.size(28.dp)
+                ) {
+                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                }
+            }
+        }
     }
 }
 

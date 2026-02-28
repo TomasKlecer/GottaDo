@@ -156,12 +156,13 @@ class CalendarSyncManager @Inject constructor(
 
                 val scheduledTime = if (event.allDay) null else event.startMillis
                 val now = System.currentTimeMillis()
+                val bulletCol = if (cat.defaultBulletColor != 0) cat.defaultBulletColor else cat.color
                 val newTask = TaskEntity(
                     categoryId = cat.id,
                     contentHtml = eventText,
                     completed = false,
-                    bulletColor = cat.color,
-                    textColor = 0,
+                    bulletColor = bulletCol,
+                    textColor = cat.defaultTextColor,
                     scheduledTimeMillis = scheduledTime,
                     sortOrder = nextOrder++,
                     createdAtMillis = now,

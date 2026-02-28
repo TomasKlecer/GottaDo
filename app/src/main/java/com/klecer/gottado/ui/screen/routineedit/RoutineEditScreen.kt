@@ -82,7 +82,7 @@ fun RoutineEditScreen(
                 OutlinedTextField(
                     value = (state.dayOfMonth ?: 1).toString(),
                     onValueChange = { v -> v.toIntOrNull()?.coerceIn(1, 31)?.let { viewModel.updateDayOfMonth(it) } },
-                    label = { Text("Day (1–31)") },
+                    label = { Text(stringResource(R.string.routine_day_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -92,7 +92,7 @@ fun RoutineEditScreen(
                 OutlinedTextField(
                     value = (state.month ?: Calendar.JANUARY).toString(),
                     onValueChange = { v -> v.toIntOrNull()?.coerceIn(Calendar.JANUARY, Calendar.DECEMBER)?.let { viewModel.updateMonth(it) } },
-                    label = { Text("Month (0–11)") },
+                    label = { Text(stringResource(R.string.routine_month_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -100,7 +100,7 @@ fun RoutineEditScreen(
                 OutlinedTextField(
                     value = (state.day ?: 1).toString(),
                     onValueChange = { v -> v.toIntOrNull()?.coerceIn(1, 31)?.let { viewModel.updateDay(it) } },
-                    label = { Text("Day (1–31)") },
+                    label = { Text(stringResource(R.string.routine_day_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -182,11 +182,19 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
+private fun frequencyLabel(f: RoutineFrequency): String = when (f) {
+    RoutineFrequency.DAILY -> stringResource(R.string.routine_freq_daily)
+    RoutineFrequency.WEEKLY -> stringResource(R.string.routine_freq_weekly)
+    RoutineFrequency.MONTHLY -> stringResource(R.string.routine_freq_monthly)
+    RoutineFrequency.YEARLY -> stringResource(R.string.routine_freq_yearly)
+}
+
+@Composable
 private fun FrequencyDropdown(current: RoutineFrequency, onChange: (RoutineFrequency) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            value = current.name,
+            value = frequencyLabel(current),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
@@ -194,35 +202,51 @@ private fun FrequencyDropdown(current: RoutineFrequency, onChange: (RoutineFrequ
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             RoutineFrequency.entries.forEach { f ->
-                DropdownMenuItem(text = { Text(f.name) }, onClick = { onChange(f); expanded = false })
+                DropdownMenuItem(text = { Text(frequencyLabel(f)) }, onClick = { onChange(f); expanded = false })
             }
         }
     }
 }
 
 @Composable
+private fun dayOfWeekLabel(dow: Int): String = when (dow) {
+    Calendar.MONDAY -> stringResource(R.string.category_type_monday)
+    Calendar.TUESDAY -> stringResource(R.string.category_type_tuesday)
+    Calendar.WEDNESDAY -> stringResource(R.string.category_type_wednesday)
+    Calendar.THURSDAY -> stringResource(R.string.category_type_thursday)
+    Calendar.FRIDAY -> stringResource(R.string.category_type_friday)
+    Calendar.SATURDAY -> stringResource(R.string.category_type_saturday)
+    Calendar.SUNDAY -> stringResource(R.string.category_type_sunday)
+    else -> "?"
+}
+
+@Composable
 private fun DayOfWeekDropdown(current: Int, onChange: (Int?) -> Unit) {
-    val days = listOf(
-        Calendar.MONDAY to "Monday", Calendar.TUESDAY to "Tuesday",
-        Calendar.WEDNESDAY to "Wednesday", Calendar.THURSDAY to "Thursday",
-        Calendar.FRIDAY to "Friday", Calendar.SATURDAY to "Saturday",
-        Calendar.SUNDAY to "Sunday"
+    val dayValues = listOf(
+        Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,
+        Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY, Calendar.SUNDAY
     )
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            value = days.find { it.first == current }?.second ?: "",
+            value = dayOfWeekLabel(current),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier.fillMaxWidth().menuAnchor()
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            days.forEach { (dow, name) ->
-                DropdownMenuItem(text = { Text(name) }, onClick = { onChange(dow); expanded = false })
+            dayValues.forEach { dow ->
+                DropdownMenuItem(text = { Text(dayOfWeekLabel(dow)) }, onClick = { onChange(dow); expanded = false })
             }
         }
     }
+}
+
+@Composable
+private fun visibilityLabel(m: RoutineVisibilityMode): String = when (m) {
+    RoutineVisibilityMode.HIDDEN -> stringResource(R.string.routine_vis_hidden)
+    RoutineVisibilityMode.VISIBLE -> stringResource(R.string.routine_vis_visible)
 }
 
 @Composable
@@ -230,7 +254,7 @@ private fun VisibilityDropdown(current: RoutineVisibilityMode, onChange: (Routin
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            value = current.name,
+            value = visibilityLabel(current),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
@@ -238,10 +262,18 @@ private fun VisibilityDropdown(current: RoutineVisibilityMode, onChange: (Routin
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             RoutineVisibilityMode.entries.forEach { m ->
-                DropdownMenuItem(text = { Text(m.name) }, onClick = { onChange(m); expanded = false })
+                DropdownMenuItem(text = { Text(visibilityLabel(m)) }, onClick = { onChange(m); expanded = false })
             }
         }
     }
+}
+
+@Composable
+private fun actionLabel(a: RoutineTaskAction): String = when (a) {
+    RoutineTaskAction.DELETE -> stringResource(R.string.routine_action_delete)
+    RoutineTaskAction.MOVE -> stringResource(R.string.routine_action_move)
+    RoutineTaskAction.COMPLETE -> stringResource(R.string.routine_action_complete)
+    RoutineTaskAction.UNCOMPLETE -> stringResource(R.string.routine_action_uncomplete)
 }
 
 @Composable
@@ -255,7 +287,7 @@ private fun TaskActionSection(
     var actionExpanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(expanded = actionExpanded, onExpandedChange = { actionExpanded = it }) {
         OutlinedTextField(
-            value = action.name,
+            value = actionLabel(action),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(actionExpanded) },
@@ -263,14 +295,15 @@ private fun TaskActionSection(
         )
         ExposedDropdownMenu(expanded = actionExpanded, onDismissRequest = { actionExpanded = false }) {
             RoutineTaskAction.entries.forEach { a ->
-                DropdownMenuItem(text = { Text(a.name) }, onClick = { onActionChange(a); actionExpanded = false })
+                DropdownMenuItem(text = { Text(actionLabel(a)) }, onClick = { onActionChange(a); actionExpanded = false })
             }
         }
     }
     if (action != RoutineTaskAction.DELETE) {
+        val dontMoveLabel = stringResource(R.string.routine_dont_move)
         var moveExpanded by remember { mutableStateOf(false) }
-        val options = listOf(null to "Don't move") + categories.map { it.id to it.name }
-        val selectedName = options.find { it.first == moveToCategoryId }?.second ?: "Don't move"
+        val options = listOf(null to dontMoveLabel) + categories.map { it.id to it.name }
+        val selectedName = options.find { it.first == moveToCategoryId }?.second ?: dontMoveLabel
         ExposedDropdownMenuBox(expanded = moveExpanded, onExpandedChange = { moveExpanded = it }) {
             OutlinedTextField(
                 value = selectedName,

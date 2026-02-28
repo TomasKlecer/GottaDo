@@ -3,9 +3,9 @@ package com.klecer.gottado
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,7 +49,7 @@ import com.klecer.gottado.ui.theme.GottaDoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -128,27 +128,27 @@ fun MainScaffold(initialRoute: String? = null) {
             title = { Text(stringResource(R.string.help_dialog_title)) },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    HelpSection("Adding the Widget to Your Home Screen")
-                    HelpBody("Long-press on an empty area of your home screen, tap \"Widgets\", find \"GottaDo\" and drag it to your screen.")
-                    HelpSection("Widget Buttons")
-                    HelpBody("Three buttons appear at the bottom of the widget:")
-                    HelpBody("  ↔  Switch widget template\n  ⚙  Open app settings\n  ⇅  Reorder entries")
-                    HelpSection("Managing Entries")
-                    HelpBody("Tap a category name to add a new entry. Tap an entry to edit it. Tap a checkbox/bullet to mark complete.")
-                    HelpSection("Categories")
-                    HelpBody("Manage categories in the \"Categories\" tab. Each category can have its own color, display style (bullet or checkbox), and behavior settings.")
-                    HelpSection("Calendar Sync")
-                    HelpBody("Enable Google Calendar sync in Settings (gear icon in the top bar). Then set sync rules per category (e.g. \"Today\", \"Tomorrow\") to auto-import calendar events.")
-                    HelpSection("Notifications")
-                    HelpBody("Enable notifications in Settings, then enable per-category in category settings. Set how many minutes before a timed entry you want to be notified.")
-                    HelpSection("Routines")
-                    HelpBody("Automate tasks on a schedule — move incomplete tasks between categories, uncheck completed entries, or delete them. Configure in category settings.")
-                    HelpSection("Widget Templates")
-                    HelpBody("Create multiple widget configurations in the \"Widgets\" tab. Each home screen widget can use any template — switch with the ↔ button.")
-                    HelpSection("Entry Options")
-                    HelpBody("Customize which fields appear in the add/edit entry dialog in the \"Entry options\" tab — color pickers, time field, category dropdown, and more.")
-                    HelpSection("History")
-                    HelpBody("Deleted entries go to the \"History\" tab. Browse by category or by time, restore or permanently delete entries.")
+                    HelpSection(stringResource(R.string.help_adding_widget))
+                    HelpBody(stringResource(R.string.help_adding_widget_body))
+                    HelpSection(stringResource(R.string.help_widget_buttons))
+                    HelpBody(stringResource(R.string.help_widget_buttons_body))
+                    HelpBody(stringResource(R.string.help_widget_buttons_list))
+                    HelpSection(stringResource(R.string.help_managing_entries))
+                    HelpBody(stringResource(R.string.help_managing_entries_body))
+                    HelpSection(stringResource(R.string.help_categories))
+                    HelpBody(stringResource(R.string.help_categories_body))
+                    HelpSection(stringResource(R.string.help_calendar_sync))
+                    HelpBody(stringResource(R.string.help_calendar_sync_body))
+                    HelpSection(stringResource(R.string.help_notifications))
+                    HelpBody(stringResource(R.string.help_notifications_body))
+                    HelpSection(stringResource(R.string.help_routines))
+                    HelpBody(stringResource(R.string.help_routines_body))
+                    HelpSection(stringResource(R.string.help_templates))
+                    HelpBody(stringResource(R.string.help_templates_body))
+                    HelpSection(stringResource(R.string.help_entry_options))
+                    HelpBody(stringResource(R.string.help_entry_options_body))
+                    HelpSection(stringResource(R.string.help_history))
+                    HelpBody(stringResource(R.string.help_history_body))
                 }
             },
             confirmButton = {
